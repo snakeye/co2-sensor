@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.2.0">
+<eagle version="9.2.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -17087,14 +17087,18 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <wire x1="6" y1="5" x2="6" y2="0" width="0.127" layer="21"/>
 <text x="1" y="9" size="1.27" layer="21">&gt;NAME</text>
 <text x="1" y="7" size="1.27" layer="21">&gt;VALUE</text>
-<wire x1="-5.35" y1="3.95" x2="-5.35" y2="1.45" width="0.0762" layer="46"/>
-<wire x1="-5.35" y1="1.45" x2="-6.35" y2="1.45" width="0.0762" layer="46"/>
-<wire x1="-6.35" y1="1.45" x2="-6.35" y2="3.95" width="0.0762" layer="46"/>
-<wire x1="-6.35" y1="3.95" x2="-5.35" y2="3.95" width="0.0762" layer="46"/>
-<wire x1="5.35" y1="3.95" x2="6.35" y2="3.95" width="0.0762" layer="46"/>
-<wire x1="6.35" y1="1.45" x2="5.35" y2="1.45" width="0.0762" layer="46"/>
-<wire x1="6.35" y1="3.95" x2="6.35" y2="1.45" width="0.0762" layer="46"/>
-<wire x1="5.35" y1="1.45" x2="5.35" y2="3.95" width="0.0762" layer="46"/>
+<polygon width="0.0762" layer="46">
+<vertex x="-5.35" y="1.45"/>
+<vertex x="-6.35" y="1.45"/>
+<vertex x="-6.35" y="3.95"/>
+<vertex x="-5.35" y="3.95"/>
+</polygon>
+<polygon width="0.0762" layer="46">
+<vertex x="5.35" y="3.95"/>
+<vertex x="5.35" y="1.45"/>
+<vertex x="6.35" y="1.45"/>
+<vertex x="6.35" y="3.95"/>
+</polygon>
 </package>
 </packages>
 <symbols>
@@ -17107,8 +17111,8 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <pin name="D-" x="7.62" y="5.08" visible="pin" length="short" rot="R180"/>
 <pin name="VBUS" x="7.62" y="2.54" visible="pin" length="short" direction="sup" rot="R180"/>
 <pin name="GND@1" x="7.62" y="0" visible="pin" length="short" direction="sup" rot="R180"/>
-<pin name="GND@3" x="2.54" y="-2.54" visible="off" length="point" direction="sup"/>
-<pin name="GND@2" x="2.54" y="10.16" visible="off" length="point" direction="sup"/>
+<pin name="GND@3" x="5.08" y="-2.54" visible="off" length="short" direction="sup" rot="R90"/>
+<pin name="GND@2" x="5.08" y="10.16" visible="off" length="short" direction="sup" rot="R270"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -17192,113 +17196,121 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <part name="R3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="M0805" package3d_urn="urn:adsk.eagle:package:23556/1" value="4.7k"/>
 <part name="R4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="M0805" package3d_urn="urn:adsk.eagle:package:23556/1" value="10k"/>
 <part name="U$1" library="usb" deviceset="USB-A" device=""/>
+<part name="GND11" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
+<part name="GND12" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
 <plain>
 </plain>
 <instances>
-<instance part="U1" gate="G$1" x="119.38" y="-27.94">
+<instance part="U1" gate="G$1" x="119.38" y="-27.94" smashed="yes">
 <attribute name="NAME" x="106.68" y="-17.78" size="1.778" layer="95"/>
 <attribute name="VALUE" x="127" y="-53.34" size="1.778" layer="96"/>
 </instance>
-<instance part="LED1" gate="G$1" x="91.44" y="-76.2"/>
-<instance part="J1" gate="G$1" x="43.18" y="-40.64">
+<instance part="LED1" gate="G$1" x="91.44" y="-76.2" smashed="yes"/>
+<instance part="J1" gate="G$1" x="43.18" y="-40.64" smashed="yes">
 <attribute name="NAME" x="30.48" y="-30.48" size="1.27" layer="95"/>
 <attribute name="VALUE" x="30.48" y="-32.258" size="1.27" layer="96"/>
 </instance>
-<instance part="+3V1" gate="G$1" x="96.52" y="-38.1" rot="R90">
+<instance part="+3V1" gate="G$1" x="96.52" y="-38.1" smashed="yes" rot="R90">
 <attribute name="VALUE" x="101.6" y="-40.64" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="P+1" gate="1" x="17.78" y="-45.72" rot="R90">
+<instance part="P+1" gate="1" x="17.78" y="-45.72" smashed="yes" rot="R90">
 <attribute name="VALUE" x="22.86" y="-48.26" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="GND1" gate="1" x="91.44" y="-88.9">
+<instance part="GND1" gate="1" x="91.44" y="-88.9" smashed="yes">
 <attribute name="VALUE" x="88.9" y="-91.44" size="1.778" layer="96"/>
 </instance>
-<instance part="GND2" gate="1" x="10.16" y="-45.72">
+<instance part="GND2" gate="1" x="10.16" y="-45.72" smashed="yes">
 <attribute name="VALUE" x="7.62" y="-48.26" size="1.778" layer="96"/>
 </instance>
-<instance part="GND3" gate="1" x="147.32" y="-40.64">
+<instance part="GND3" gate="1" x="147.32" y="-40.64" smashed="yes">
 <attribute name="VALUE" x="144.78" y="-43.18" size="1.778" layer="96"/>
 </instance>
-<instance part="P+2" gate="1" x="96.52" y="-55.88">
+<instance part="P+2" gate="1" x="96.52" y="-55.88" smashed="yes">
 <attribute name="VALUE" x="93.98" y="-60.96" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="IC1" gate="G$1" x="40.64" y="-7.62">
+<instance part="IC1" gate="G$1" x="40.64" y="-7.62" smashed="yes">
 <attribute name="NAME" x="43.18" y="-15.24" size="1.778" layer="95"/>
 <attribute name="VALUE" x="43.18" y="-17.78" size="1.778" layer="96"/>
 </instance>
-<instance part="GND4" gate="1" x="40.64" y="-17.78">
+<instance part="GND4" gate="1" x="40.64" y="-17.78" smashed="yes">
 <attribute name="VALUE" x="38.1" y="-20.32" size="1.778" layer="96"/>
 </instance>
-<instance part="P+3" gate="1" x="30.48" y="2.54">
+<instance part="P+3" gate="1" x="30.48" y="2.54" smashed="yes">
 <attribute name="VALUE" x="27.94" y="-2.54" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="+3V2" gate="G$1" x="73.66" y="-7.62" rot="R270">
+<instance part="+3V2" gate="G$1" x="73.66" y="-7.62" smashed="yes" rot="R270">
 <attribute name="VALUE" x="68.58" y="-5.08" size="1.778" layer="96"/>
 </instance>
-<instance part="GND5" gate="1" x="10.16" y="-12.7">
+<instance part="GND5" gate="1" x="10.16" y="-12.7" smashed="yes">
 <attribute name="VALUE" x="7.62" y="-15.24" size="1.778" layer="96"/>
 </instance>
-<instance part="GND6" gate="1" x="25.4" y="-17.78">
+<instance part="GND6" gate="1" x="25.4" y="-17.78" smashed="yes">
 <attribute name="VALUE" x="22.86" y="-20.32" size="1.778" layer="96"/>
 </instance>
-<instance part="GND7" gate="1" x="53.34" y="-17.78">
+<instance part="GND7" gate="1" x="53.34" y="-17.78" smashed="yes">
 <attribute name="VALUE" x="50.8" y="-20.32" size="1.778" layer="96"/>
 </instance>
-<instance part="R1" gate="G$1" x="93.98" y="-20.32">
+<instance part="R1" gate="G$1" x="93.98" y="-20.32" smashed="yes">
 <attribute name="NAME" x="90.17" y="-18.8214" size="1.778" layer="95"/>
 <attribute name="VALUE" x="93.98" y="-18.796" size="1.778" layer="96"/>
 </instance>
-<instance part="R2" gate="G$1" x="93.98" y="-25.4">
+<instance part="R2" gate="G$1" x="93.98" y="-25.4" smashed="yes">
 <attribute name="NAME" x="90.17" y="-23.9014" size="1.778" layer="95"/>
 <attribute name="VALUE" x="93.98" y="-23.876" size="1.778" layer="96"/>
 </instance>
-<instance part="+3V3" gate="G$1" x="86.36" y="-12.7">
+<instance part="+3V3" gate="G$1" x="86.36" y="-12.7" smashed="yes">
 <attribute name="VALUE" x="83.82" y="-17.78" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="C1" gate="G$1" x="25.4" y="-10.16">
+<instance part="C1" gate="G$1" x="25.4" y="-10.16" smashed="yes">
 <attribute name="NAME" x="26.543" y="-9.6774" size="1.778" layer="95"/>
 <attribute name="VALUE" x="26.543" y="-14.7574" size="1.778" layer="96"/>
 </instance>
-<instance part="C2" gate="G$1" x="53.34" y="-10.16">
+<instance part="C2" gate="G$1" x="53.34" y="-10.16" smashed="yes">
 <attribute name="NAME" x="54.483" y="-9.6774" size="1.778" layer="95"/>
 <attribute name="VALUE" x="54.483" y="-14.7574" size="1.778" layer="96"/>
 </instance>
-<instance part="U2" gate="G$1" x="17.78" y="-73.66" rot="MR0">
+<instance part="U2" gate="G$1" x="17.78" y="-73.66" smashed="yes" rot="MR0">
 <attribute name="NAME" x="22.86" y="-62.23" size="1.27" layer="94" rot="MR0"/>
 <attribute name="VALUE" x="22.86" y="-86.36" size="1.27" layer="94" rot="MR0"/>
 </instance>
-<instance part="P+4" gate="1" x="45.72" y="-60.96" rot="MR90">
+<instance part="P+4" gate="1" x="45.72" y="-60.96" smashed="yes" rot="MR90">
 <attribute name="VALUE" x="40.64" y="-63.5" size="1.778" layer="96" rot="MR180"/>
 </instance>
-<instance part="GND10" gate="1" x="33.02" y="-83.82" rot="MR0">
+<instance part="GND10" gate="1" x="33.02" y="-83.82" smashed="yes" rot="MR0">
 <attribute name="VALUE" x="35.56" y="-86.36" size="1.778" layer="96" rot="MR0"/>
 </instance>
-<instance part="C3" gate="G$1" x="60.96" y="-10.16">
+<instance part="C3" gate="G$1" x="60.96" y="-10.16" smashed="yes">
 <attribute name="NAME" x="62.484" y="-9.779" size="1.778" layer="95"/>
 <attribute name="VALUE" x="62.484" y="-14.859" size="1.778" layer="96"/>
 </instance>
-<instance part="GND8" gate="1" x="60.96" y="-17.78">
+<instance part="GND8" gate="1" x="60.96" y="-17.78" smashed="yes">
 <attribute name="VALUE" x="58.42" y="-20.32" size="1.778" layer="96"/>
 </instance>
-<instance part="GND9" gate="1" x="17.78" y="-17.78">
+<instance part="GND9" gate="1" x="17.78" y="-17.78" smashed="yes">
 <attribute name="VALUE" x="15.24" y="-20.32" size="1.778" layer="96"/>
 </instance>
-<instance part="C4" gate="G$1" x="17.78" y="-10.16">
+<instance part="C4" gate="G$1" x="17.78" y="-10.16" smashed="yes">
 <attribute name="NAME" x="19.304" y="-9.779" size="1.778" layer="95"/>
 <attribute name="VALUE" x="19.304" y="-14.859" size="1.778" layer="96"/>
 </instance>
-<instance part="R3" gate="G$1" x="139.7" y="-35.56">
+<instance part="R3" gate="G$1" x="139.7" y="-35.56" smashed="yes">
 <attribute name="NAME" x="135.89" y="-34.0614" size="1.778" layer="95"/>
 <attribute name="VALUE" x="135.89" y="-38.862" size="1.778" layer="96"/>
 </instance>
-<instance part="R4" gate="G$1" x="38.1" y="-66.04" rot="MR90">
-<attribute name="NAME" x="39.5986" y="-69.85" size="1.778" layer="95" rot="MR90"/>
-<attribute name="VALUE" x="34.798" y="-69.85" size="1.778" layer="96" rot="MR90"/>
+<instance part="R4" gate="G$1" x="35.56" y="-66.04" smashed="yes" rot="MR90">
+<attribute name="NAME" x="37.0586" y="-69.85" size="1.778" layer="95" rot="MR90"/>
+<attribute name="VALUE" x="32.258" y="-69.85" size="1.778" layer="96" rot="MR90"/>
 </instance>
-<instance part="U$1" gate="G$1" x="0" y="-10.16"/>
+<instance part="U$1" gate="G$1" x="0" y="-10.16" smashed="yes"/>
+<instance part="GND11" gate="1" x="5.08" y="-15.24" smashed="yes">
+<attribute name="VALUE" x="2.54" y="-17.78" size="1.778" layer="96"/>
+</instance>
+<instance part="GND12" gate="1" x="5.08" y="2.54" smashed="yes" rot="R180">
+<attribute name="VALUE" x="7.62" y="5.08" size="1.778" layer="96" rot="R180"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -17351,6 +17363,14 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <segment>
 <pinref part="GND9" gate="1" pin="GND"/>
 <pinref part="C4" gate="G$1" pin="2"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="GND@3"/>
+<pinref part="GND11" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="GND@2"/>
+<pinref part="GND12" gate="1" pin="GND"/>
 </segment>
 </net>
 <net name="+3V3" class="3">
@@ -17413,11 +17433,11 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <segment>
 <pinref part="R4" gate="G$1" pin="2"/>
 <pinref part="P+4" gate="1" pin="+5V"/>
-<wire x1="43.18" y1="-60.96" x2="38.1" y2="-60.96" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="-60.96" x2="35.56" y2="-60.96" width="0.1524" layer="91"/>
 <pinref part="U2" gate="G$1" pin="VDD"/>
-<wire x1="38.1" y1="-60.96" x2="27.94" y2="-60.96" width="0.1524" layer="91"/>
+<wire x1="35.56" y1="-60.96" x2="27.94" y2="-60.96" width="0.1524" layer="91"/>
 <wire x1="27.94" y1="-60.96" x2="27.94" y2="-66.04" width="0.1524" layer="91"/>
-<junction x="38.1" y="-60.96"/>
+<junction x="35.56" y="-60.96"/>
 </segment>
 </net>
 <net name="RESET" class="0">
@@ -17439,11 +17459,11 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <net name="DHT22" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="DATA"/>
-<wire x1="27.94" y1="-71.12" x2="38.1" y2="-71.12" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="-71.12" x2="35.56" y2="-71.12" width="0.1524" layer="91"/>
 <label x="40.64" y="-71.12" size="1.27" layer="95" rot="MR180" xref="yes"/>
 <pinref part="R4" gate="G$1" pin="1"/>
-<wire x1="38.1" y1="-71.12" x2="40.64" y2="-71.12" width="0.1524" layer="91"/>
-<junction x="38.1" y="-71.12"/>
+<wire x1="35.56" y1="-71.12" x2="40.64" y2="-71.12" width="0.1524" layer="91"/>
+<junction x="35.56" y="-71.12"/>
 </segment>
 <segment>
 <pinref part="U1" gate="G$1" pin="GPIO5"/>
@@ -17496,13 +17516,6 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 </nets>
 </sheet>
 </sheets>
-<errors>
-<approved hash="104,1,83.82,-25.4,LED1,VDD,+5V,,,"/>
-<approved hash="104,1,10.16,-10.16,J1,VIN,+5V,,,"/>
-<approved hash="204,1,50.8,-10.16,J1,VO,,,,"/>
-<approved hash="202,1,50.8,0,J1,HD,,,,"/>
-<approved hash="104,1,15.24,-30.48,U2,VDD,+5V,,,"/>
-</errors>
 </schematic>
 </drawing>
 <compatibility>
