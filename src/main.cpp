@@ -95,7 +95,7 @@ void loop()
     static DisplayStatus status = DisplayStatus::LOADING;
 
     // measure CO2 level every second
-    RecurringTask::interval(1000, [&]() {
+    RecurringTask::interval(5000, [&]() {
         if (mhz19.isReady())
         {
             int co2ppm = 0;
@@ -133,7 +133,7 @@ void loop()
         }
     });
 
-    //
+    // Change indication if status has changed and previous cycle finished
     if (ws2812fx.isFrame() && lastStatus != status)
     {
         switch (status)
@@ -153,7 +153,7 @@ void loop()
         case DisplayStatus::WARNING:
             Serial.println("Warning");
             ws2812fx.setColor(0xFFFF00);
-            ws2812fx.setMode(FX_MODE_BLINK);
+            ws2812fx.setMode(FX_MODE_FADE);
             ws2812fx.setBrightness(64);
             break;
         case DisplayStatus::DANGER:
@@ -174,11 +174,10 @@ void loop()
         lastStatus = status;
     }
 
-    //
+    // run service tasks
     configManager.loop();
-
     ws2812fx.service();
 
-    //
+    // relax a bit
     delay(1);
 }
