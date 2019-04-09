@@ -46,7 +46,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    // pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
 
     // configuration setup
     configManager.setAPName("CO2 Sensor");
@@ -71,7 +71,6 @@ void setup()
     ws2812fx.init();
     ws2812fx.setBrightness(100);
     ws2812fx.setColor(0x8800FF);
-    ws2812fx.setColor(random(255), random(255), random(255));
     ws2812fx.setSpeed(200);
     ws2812fx.start();
 }
@@ -95,6 +94,7 @@ void loop()
     static DisplayStatus lastStatus = DisplayStatus::UNDEFINED;
     static DisplayStatus status = DisplayStatus::LOADING;
 
+    // measure CO2 level every second
     RecurringTask::interval(1000, [&]() {
         if (mhz19.isReady())
         {
@@ -117,7 +117,7 @@ void loop()
                 {
                     status = DisplayStatus::DANGER;
                 }
-                else if (co2ppm >= config.co2.danger)
+                else if (co2ppm >= config.co2.warning)
                 {
                     status = DisplayStatus::WARNING;
                 }
@@ -134,52 +134,48 @@ void loop()
     });
 
     //
+    if (ws2812fx.isFrame() && lastStatus != status)
+    {
+        switch (status)
+        {
+        case DisplayStatus::LOADING:
+            Serial.println("Loading");
+            ws2812fx.setColor(0x0000FF);
+            ws2812fx.setMode(FX_MODE_BREATH);
+            ws2812fx.setBrightness(32);
+            break;
+        case DisplayStatus::BREATH:
+            Serial.println("Breath");
+            ws2812fx.setColor(0x00FF00);
+            ws2812fx.setMode(FX_MODE_BREATH);
+            ws2812fx.setBrightness(16);
+            break;
+        case DisplayStatus::WARNING:
+            Serial.println("Warning");
+            ws2812fx.setColor(0xFFFF00);
+            ws2812fx.setMode(FX_MODE_BLINK);
+            ws2812fx.setBrightness(64);
+            break;
+        case DisplayStatus::DANGER:
+            Serial.println("Danger");
+            ws2812fx.setColor(0xFF0000);
+            ws2812fx.setMode(FX_MODE_STROBE);
+            ws2812fx.setBrightness(128);
+            break;
+        case DisplayStatus::ERROR:
+            Serial.println("Error");
+            ws2812fx.setColor(0xFF0000);
+            ws2812fx.setMode(FX_MODE_STATIC);
+            break;
+        default:
+            break;
+        }
+
+        lastStatus = status;
+    }
+
+    //
     configManager.loop();
-
-    //
-    RecurringTask::every(500, []() {
-        ws2812fx.setColor(random(255), random(255), random(255));
-        Serial.println('.');
-    });
-
-    //
-    // if (ws2812fx.isFrame() && lastStatus != status)
-    // {
-    //     Serial.println(status);
-
-    //     switch (status)
-    //     {
-    //     case DisplayStatus::LOADING:
-    //         Serial.println("Loading");
-    //         ws2812fx.setColor(random(255),random(255),random(255));
-    //         ws2812fx.setMode(FX_MODE_BREATH);
-    //         break;
-    //     case DisplayStatus::BREATH:
-    //         Serial.println("Breath");
-    //         ws2812fx.setColor(0x00FF00);
-    //         ws2812fx.setMode(FX_MODE_BREATH);
-    //         break;
-    //     case DisplayStatus::WARNING:
-    //         Serial.println("Warning");
-    //         ws2812fx.setColor(0xFFFF00);
-    //         ws2812fx.setMode(FX_MODE_BLINK);
-    //         break;
-    //     case DisplayStatus::DANGER:
-    //         Serial.println("Danger");
-    //         ws2812fx.setColor(0xFF0000);
-    //         ws2812fx.setMode(FX_MODE_STROBE);
-    //         break;
-    //     case DisplayStatus::ERROR:
-    //         Serial.println("Error");
-    //         ws2812fx.setColor(0xFF0000);
-    //         ws2812fx.setMode(FX_MODE_STATIC);
-    //         break;
-    //     default:
-    //         break;
-    //     }
-
-    //     lastStatus = status;
-    // }
 
     ws2812fx.service();
 
