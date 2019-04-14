@@ -1,4 +1,7 @@
+#define DHCPS_DEBUG
+
 #include <Arduino.h>
+#include <ESP8266mDNS.h>
 
 // CO2 sensor
 #include <SoftwareSerial.h>
@@ -38,7 +41,13 @@ WS2812FX ws2812fx = WS2812FX(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 //
 #include <RecurringTask.h>
 
+//
+#include <ArduinoOTA.h>
+
+const char* hostname = "CO2 Sensor";
+
 /**
+ *
  * @brief
  *
  */
@@ -49,7 +58,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
 
     // configuration setup
-    configManager.setAPName("CO2 Sensor");
+    configManager.setAPName(hostname);
 
     configManager.addParameterGroup("co2", new Metadata("CO2", "CO2 levels for indication"))
         .addParameter("warning", &config.co2.warning, new Metadata("Warning level"))
@@ -73,6 +82,14 @@ void setup()
     ws2812fx.setColor(0x8800FF);
     ws2812fx.setSpeed(200);
     ws2812fx.start();
+
+    //
+    MDNS.begin(hostname);
+    MDNS.addService("http", "tcp", 80);
+
+    //
+    ArduinoOTA.setHostname(hostname);
+    ArduinoOTA.begin();
 }
 
 enum DisplayStatus
@@ -177,6 +194,7 @@ void loop()
     // run service tasks
     configManager.loop();
     ws2812fx.service();
+    ArduinoOTA.handle();
 
     // relax a bit
     delay(1);
