@@ -5,14 +5,17 @@
 
 // CO2 sensor
 #include <SoftwareSerial.h>
-SoftwareSerial swSerial(14, 16, false, 256);
+SoftwareSerial swSerial(14, 16);
 
 #include <MHZ19.h>
 MHZ19 mhz19;
 
 // Configuration
 #include <WiFiConfig.h>
-#define SERVER_NAME_LENGTH 120
+
+//
+#include <ESP8266WiFi.h>
+#include <FirebaseArduino.h>
 
 struct Config
 {
@@ -21,12 +24,11 @@ struct Config
         int warning = 800;
         int danger = 1400;
     } co2;
-    struct MQTT
+    struct Firebase
     {
-        bool enabled = false;
-        char server[SERVER_NAME_LENGTH] = {0};
-        int port = 0;
-    } mqtt;
+        char host[100] = {0};
+        char auth[100] = {0};
+    } firebase;
 } config;
 
 ConfigManager configManager;
@@ -35,7 +37,7 @@ ConfigManager configManager;
 #include <WS2812FX.h>
 
 #define LED_COUNT 1
-#define LED_PIN 4
+#define LED_PIN 15
 WS2812FX ws2812fx = WS2812FX(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 //
@@ -44,7 +46,13 @@ WS2812FX ws2812fx = WS2812FX(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 //
 #include <ArduinoOTA.h>
 
-const char* hostname = "CO2 Sensor";
+const char *hostname = "CO2 Sensor Test";
+
+const String deviceId = String("Sensor-") + String(ESP.getChipId(), HEX);
+const String firebasePath = "/" + deviceId + "/";
+
+// #define FIREBASE_HOST "https://co2-sensor-test.firebaseio.com"
+// #define FIREBASE_AUTH "0iamLjkkgc4SfwqoBOSyV6P02FOTo9YshzzMT54K"
 
 /**
  *
@@ -64,10 +72,9 @@ void setup()
         .addParameter("warning", &config.co2.warning, new Metadata("Warning level"))
         .addParameter("danger", &config.co2.danger, new Metadata("Danger level"));
 
-    configManager.addParameterGroup("mqtt", new Metadata("MQTT", "MQTT Server configuration"))
-        .addParameter("enabled", &config.mqtt.enabled, new Metadata("Enabled"))
-        .addParameter("server", config.mqtt.server, SERVER_NAME_LENGTH, new Metadata("Server"))
-        .addParameter("port", &config.mqtt.port, new Metadata("Port"));
+    configManager.addParameterGroup("firebase", new Metadata("Firebase", "Firebase configuration"))
+        .addParameter("host", config.firebase.host, 100, new Metadata("Host"))
+        .addParameter("auth", config.firebase.auth, 100, new Metadata("Token or Secret"));
 
     configManager.begin(config);
 
@@ -78,7 +85,7 @@ void setup()
 
     // Indicator setup
     ws2812fx.init();
-    ws2812fx.setBrightness(100);
+    ws2812fx.setBrightness(50);
     ws2812fx.setColor(0x8800FF);
     ws2812fx.setSpeed(200);
     ws2812fx.start();
@@ -90,6 +97,17 @@ void setup()
     //
     ArduinoOTA.setHostname(hostname);
     ArduinoOTA.begin();
+
+    //
+    Serial.println("Starting firebase");
+    Serial.println(config.firebase.host);
+    Firebase.begin(config.firebase.host, config.firebase.auth);
+    // Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+
+    //
+    Serial.println("Go!");
+    Serial.println(deviceId);
+    Serial.println(firebasePath);
 }
 
 enum DisplayStatus
@@ -111,42 +129,46 @@ void loop()
     static DisplayStatus lastStatus = DisplayStatus::UNDEFINED;
     static DisplayStatus status = DisplayStatus::LOADING;
 
-    // measure CO2 level every second
-    RecurringTask::interval(5000, [&]() {
-        if (mhz19.isReady())
+    // measure CO2 level every 10 seconds
+    RecurringTask::interval(10000, [&]() {
+        if (!mhz19.isReady())
         {
-            int co2ppm = 0;
-            MHZ19::ErrorCode res = mhz19.readValue(&co2ppm);
+            Serial.println("CO2 not ready");
+            return;
+        }
 
-            if (res != MHZ19::ErrorCode::OK)
-            {
-                Serial.print("Error: ");
-                Serial.println(res);
+        int co2ppm = mhz19.readValue();
 
-                status = DisplayStatus::ERROR;
-            }
-            else
-            {
-                Serial.print("CO2: ");
-                Serial.println(co2ppm);
+        if (co2ppm == -1)
+        {
+            Serial.println("Error");
 
-                if (co2ppm >= config.co2.danger)
-                {
-                    status = DisplayStatus::DANGER;
-                }
-                else if (co2ppm >= config.co2.warning)
-                {
-                    status = DisplayStatus::WARNING;
-                }
-                else
-                {
-                    status = DisplayStatus::BREATH;
-                }
-            }
+            status = DisplayStatus::ERROR;
         }
         else
         {
-            Serial.println("CO2 not ready");
+            Serial.print("CO2: ");
+            Serial.println(co2ppm);
+
+            if (co2ppm >= config.co2.danger)
+            {
+                status = DisplayStatus::DANGER;
+            }
+            else if (co2ppm >= config.co2.warning)
+            {
+                status = DisplayStatus::WARNING;
+            }
+            else
+            {
+                status = DisplayStatus::BREATH;
+            }
+
+            Firebase.setInt("co2", co2ppm);
+            if (Firebase.failed())
+            {
+                Serial.print("setting /co2 failed: ");
+                Serial.println(Firebase.error());
+            }
         }
     });
 
@@ -197,5 +219,5 @@ void loop()
     ArduinoOTA.handle();
 
     // relax a bit
-    delay(1);
+    delay(10);
 }
