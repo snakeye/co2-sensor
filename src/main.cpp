@@ -51,9 +51,6 @@ const char *hostname = "CO2 Sensor Test";
 const String deviceId = String("Sensor-") + String(ESP.getChipId(), HEX);
 const String firebasePath = "/" + deviceId + "/";
 
-// #define FIREBASE_HOST "https://co2-sensor-test.firebaseio.com"
-// #define FIREBASE_AUTH "0iamLjkkgc4SfwqoBOSyV6P02FOTo9YshzzMT54K"
-
 /**
  *
  * @brief
