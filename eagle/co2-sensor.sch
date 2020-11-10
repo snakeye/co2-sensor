@@ -17671,25 +17671,101 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 </deviceset>
 </devicesets>
 </library>
+<library name="BMP280">
+<packages>
+<package name="XDCR_BMP280">
+<circle x="1.695" y="1.15" radius="0.1" width="0.2" layer="21"/>
+<text x="-1.250059375" y="1.902290625" size="0.8128375" layer="25" ratio="14">&gt;NAME</text>
+<text x="-1.434040625" y="-2.874109375" size="0.813984375" layer="27" ratio="14">&gt;VALUE</text>
+<wire x1="-1" y1="1.25" x2="-1" y2="-1.25" width="0.127" layer="51"/>
+<wire x1="-1" y1="-1.25" x2="1" y2="-1.25" width="0.127" layer="51"/>
+<wire x1="1" y1="-1.25" x2="1" y2="1.25" width="0.127" layer="51"/>
+<wire x1="1" y1="1.25" x2="-1" y2="1.25" width="0.127" layer="51"/>
+<wire x1="-1" y1="1.35" x2="1" y2="1.35" width="0.127" layer="21"/>
+<wire x1="-1" y1="-1.35" x2="1" y2="-1.35" width="0.127" layer="21"/>
+<wire x1="-1.3" y1="1.5" x2="1.3" y2="1.5" width="0.05" layer="39"/>
+<wire x1="1.3" y1="1.5" x2="1.3" y2="-1.5" width="0.05" layer="39"/>
+<wire x1="1.3" y1="-1.5" x2="-1.3" y2="-1.5" width="0.05" layer="39"/>
+<wire x1="-1.3" y1="-1.5" x2="-1.3" y2="1.5" width="0.05" layer="39"/>
+<smd name="2" x="0.8" y="0.325" dx="0.5" dy="0.35" layer="1"/>
+<smd name="7" x="-0.8" y="0.325" dx="0.5" dy="0.35" layer="1"/>
+<smd name="3" x="0.8" y="-0.325" dx="0.5" dy="0.35" layer="1"/>
+<smd name="6" x="-0.8" y="-0.325" dx="0.5" dy="0.35" layer="1"/>
+<smd name="8" x="-0.8" y="0.975" dx="0.5" dy="0.35" layer="1"/>
+<smd name="1" x="0.8" y="0.975" dx="0.5" dy="0.35" layer="1"/>
+<smd name="4" x="0.8" y="-0.975" dx="0.5" dy="0.35" layer="1"/>
+<smd name="5" x="-0.8" y="-0.975" dx="0.5" dy="0.35" layer="1"/>
+</package>
+</packages>
+<symbols>
+<symbol name="BMP280">
+<wire x1="-10.16" y1="7.62" x2="-10.16" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="-10.16" y1="-7.62" x2="10.16" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-7.62" x2="10.16" y2="7.62" width="0.254" layer="94"/>
+<wire x1="10.16" y1="7.62" x2="-10.16" y2="7.62" width="0.254" layer="94"/>
+<text x="-10.1796" y="7.63466875" size="1.78141875" layer="95">&gt;NAME</text>
+<text x="-10.1693" y="-10.1693" size="1.77963125" layer="96">&gt;VALUE</text>
+<pin name="VDD" x="12.7" y="5.08" length="short" direction="pwr" rot="R180"/>
+<pin name="GND" x="12.7" y="-5.08" length="short" direction="pwr" rot="R180"/>
+<pin name="SDO" x="-12.7" y="0" length="short"/>
+<pin name="SDI" x="-12.7" y="2.54" length="short"/>
+<pin name="SCK" x="-12.7" y="-2.54" length="short" direction="in" function="clk"/>
+<pin name="CSB" x="-12.7" y="5.08" length="short" direction="in"/>
+<pin name="VDDIO" x="12.7" y="2.54" length="short" direction="pwr" rot="R180"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="BMP280" prefix="U">
+<description>BMP280 Absolute Barometric Pressure Sensor for Battery Powered Devices 2 x 2.5mm &lt;a href="https://pricing.snapeda.com/parts/BMP280/Bosch/view-part?ref=eda"&gt;Check prices&lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="BMP280" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="XDCR_BMP280">
+<connects>
+<connect gate="G$1" pin="CSB" pad="2"/>
+<connect gate="G$1" pin="GND" pad="1 7"/>
+<connect gate="G$1" pin="SCK" pad="4"/>
+<connect gate="G$1" pin="SDI" pad="3"/>
+<connect gate="G$1" pin="SDO" pad="5"/>
+<connect gate="G$1" pin="VDD" pad="8"/>
+<connect gate="G$1" pin="VDDIO" pad="6"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="AVAILABILITY" value="Warning"/>
+<attribute name="DESCRIPTION" value=" Pressure Sensor 4.35PSI ~ 15.95PSI (30kPa ~ 110kPa) Absolute 16b 8-SMD "/>
+<attribute name="MF" value="Bosch"/>
+<attribute name="MP" value="BMP280"/>
+<attribute name="PACKAGE" value="SMD-8 Bosch Sensortec"/>
+<attribute name="PRICE" value="None"/>
+<attribute name="PURCHASE-URL" value="https://pricing.snapeda.com/search/part/BMP280/?ref=eda"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
 <variantdefs>
 </variantdefs>
 <classes>
-<class number="0" name="default" width="0.2" drill="0">
+<class number="0" name="default" width="0.25" drill="0">
 <clearance class="0" value="0.205"/>
 </class>
-<class number="1" name="GND" width="1" drill="0">
+<class number="1" name="GND" width="0.8" drill="0">
 <clearance class="0" value="0.205"/>
 <clearance class="1" value="0.205"/>
 </class>
-<class number="2" name="+5V" width="0.8" drill="0">
+<class number="2" name="+5V" width="0.5" drill="0">
 <clearance class="0" value="0.205"/>
 <clearance class="1" value="0.205"/>
 <clearance class="2" value="0.205"/>
 </class>
-<class number="3" name="+3.3V" width="0.8" drill="0">
+<class number="3" name="+3.3V" width="0.5" drill="0">
 <clearance class="0" value="0.205"/>
 <clearance class="1" value="0.205"/>
 <clearance class="2" value="0.205"/>
@@ -17735,6 +17811,12 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <part name="LED1" library="WS2812B" deviceset="WS2812B" device="5050"/>
 <part name="GND12" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="P+2" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+5V" device=""/>
+<part name="U3" library="BMP280" deviceset="BMP280" device=""/>
+<part name="GND13" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
+<part name="GND14" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
+<part name="+3V4" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
+<part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:23617/2" value="100n"/>
+<part name="GND15" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -17871,6 +17953,26 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <instance part="P+2" gate="1" x="187.96" y="-7.62" smashed="yes">
 <attribute name="VALUE" x="185.42" y="-12.7" size="1.778" layer="96" rot="R90"/>
 </instance>
+<instance part="U3" gate="G$1" x="35.56" y="-104.14" smashed="yes">
+<attribute name="NAME" x="25.3804" y="-96.50533125" size="1.78141875" layer="95"/>
+<attribute name="VALUE" x="25.3907" y="-114.3093" size="1.77963125" layer="96"/>
+</instance>
+<instance part="GND13" gate="1" x="48.26" y="-114.3" smashed="yes">
+<attribute name="VALUE" x="45.72" y="-116.84" size="1.778" layer="96"/>
+</instance>
+<instance part="GND14" gate="1" x="12.7" y="-114.3" smashed="yes">
+<attribute name="VALUE" x="10.16" y="-116.84" size="1.778" layer="96"/>
+</instance>
+<instance part="+3V4" gate="G$1" x="50.8" y="-91.44" smashed="yes">
+<attribute name="VALUE" x="48.26" y="-96.52" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="C1" gate="G$1" x="68.58" y="-10.16" smashed="yes">
+<attribute name="NAME" x="70.104" y="-9.779" size="1.778" layer="95"/>
+<attribute name="VALUE" x="70.104" y="-14.859" size="1.778" layer="96"/>
+</instance>
+<instance part="GND15" gate="1" x="68.58" y="-20.32" smashed="yes">
+<attribute name="VALUE" x="66.04" y="-22.86" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -17969,6 +18071,22 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <pinref part="LED1" gate="G$1" pin="GND"/>
 <pinref part="GND12" gate="1" pin="GND"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="GND"/>
+<pinref part="GND13" gate="1" pin="GND"/>
+<wire x1="48.26" y1="-109.22" x2="48.26" y2="-111.76" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="SDO"/>
+<wire x1="22.86" y1="-104.14" x2="12.7" y2="-104.14" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-104.14" x2="12.7" y2="-111.76" width="0.1524" layer="91"/>
+<pinref part="GND14" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="C1" gate="G$1" pin="2"/>
+<pinref part="GND15" gate="1" pin="GND"/>
+<wire x1="68.58" y1="-17.78" x2="68.58" y2="-15.24" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="+3V3" class="3">
 <segment>
@@ -17981,7 +18099,8 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <wire x1="48.26" y1="-7.62" x2="53.34" y2="-7.62" width="0.1524" layer="91"/>
 <pinref part="IC1" gate="G$1" pin="OUT1"/>
 <wire x1="53.34" y1="-7.62" x2="60.96" y2="-7.62" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="-7.62" x2="71.12" y2="-7.62" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="-7.62" x2="68.58" y2="-7.62" width="0.1524" layer="91"/>
+<wire x1="68.58" y1="-7.62" x2="71.12" y2="-7.62" width="0.1524" layer="91"/>
 <wire x1="48.26" y1="-5.08" x2="53.34" y2="-5.08" width="0.1524" layer="91"/>
 <wire x1="53.34" y1="-5.08" x2="53.34" y2="-7.62" width="0.1524" layer="91"/>
 <junction x="53.34" y="-7.62"/>
@@ -17989,6 +18108,8 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <pinref part="C2" gate="G$1" pin="+"/>
 <pinref part="C3" gate="G$1" pin="1"/>
 <junction x="60.96" y="-7.62"/>
+<pinref part="C1" gate="G$1" pin="1"/>
+<junction x="68.58" y="-7.62"/>
 </segment>
 <segment>
 <pinref part="R1" gate="G$1" pin="1"/>
@@ -18019,6 +18140,21 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <pinref part="IC2" gate="G$1" pin="VCC"/>
 <wire x1="147.32" y1="-66.04" x2="144.78" y2="-66.04" width="0.1524" layer="91"/>
 <label x="144.78" y="-66.04" size="1.016" layer="95" rot="MR0" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="CSB"/>
+<wire x1="22.86" y1="-99.06" x2="20.32" y2="-99.06" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="-99.06" x2="20.32" y2="-93.98" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="-93.98" x2="50.8" y2="-93.98" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="-93.98" x2="50.8" y2="-99.06" width="0.1524" layer="91"/>
+<pinref part="U3" gate="G$1" pin="VDDIO"/>
+<wire x1="50.8" y1="-99.06" x2="50.8" y2="-101.6" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="-101.6" x2="48.26" y2="-101.6" width="0.1524" layer="91"/>
+<pinref part="U3" gate="G$1" pin="VDD"/>
+<wire x1="48.26" y1="-99.06" x2="50.8" y2="-99.06" width="0.1524" layer="91"/>
+<junction x="50.8" y="-99.06"/>
+<pinref part="+3V4" gate="G$1" pin="+3V3"/>
+<junction x="50.8" y="-93.98"/>
 </segment>
 </net>
 <net name="+5V" class="2">
@@ -18131,6 +18267,11 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <wire x1="172.72" y1="-63.5" x2="175.26" y2="-63.5" width="0.1524" layer="91"/>
 <label x="175.26" y="-63.5" size="1.016" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="SCK"/>
+<wire x1="22.86" y1="-106.68" x2="20.32" y2="-106.68" width="0.1524" layer="91"/>
+<label x="20.32" y="-106.68" size="1.016" layer="95" rot="MR0" xref="yes"/>
+</segment>
 </net>
 <net name="SDA" class="0">
 <segment>
@@ -18152,6 +18293,11 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <pinref part="IC2" gate="G$1" pin="SDA"/>
 <wire x1="172.72" y1="-66.04" x2="175.26" y2="-66.04" width="0.1524" layer="91"/>
 <label x="175.26" y="-66.04" size="1.016" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="SDI"/>
+<wire x1="22.86" y1="-101.6" x2="20.32" y2="-101.6" width="0.1524" layer="91"/>
+<label x="20.32" y="-101.6" size="1.016" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
 <net name="IO0" class="0">
