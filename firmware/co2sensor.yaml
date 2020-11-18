@@ -11,13 +11,22 @@ esphome:
     # upload_speed: 460800
     upload_speed: 921600
 
-# wifi:
-#   <<: !include ./secrets.yaml
+  on_boot:
+    - light.turn_on:
+        id: led
+        brightness: 100%
+        red: 100%
+        green: 100%
+        blue: 100%
 
-#   # Enable fallback hotspot (captive portal) in case wifi connection fails
-#   # ap:
-#   #   ssid: "Co2Sensor Fallback Hotspot"
-#   #   password: "JWJsr3ppPuhL"
+
+wifi:
+  <<: !include ./secrets.yaml
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  # ap:
+  #   ssid: "Co2Sensor Fallback Hotspot"
+  #   password: "JWJsr3ppPuhL"
 
 # captive_portal:
 
@@ -26,9 +35,12 @@ logger:
   level: DEBUG
 
 # Enable Home Assistant API
-# api:
+api:
 
-# ota:
+ota:
+
+web_server:
+  port: 80
 
 i2c:
   sda: 4
@@ -42,14 +54,14 @@ uart:
   baud_rate: 9600
 
 sensor:
-  - platform: dht
-    model: AM2302
-    pin: 12
-    temperature:
-      name: "Living Room Temperature"
-    humidity:
-      name: "Living Room Humidity"
-    update_interval: 15s
+  # - platform: dht
+  #   model: AM2302
+  #   pin: 12
+  #   temperature:
+  #     name: "Living Room Temperature"
+  #   humidity:
+  #     name: "Living Room Humidity"
+  #   update_interval: 15s
 
   - platform: bmp280
     temperature:
@@ -63,15 +75,42 @@ sensor:
   - platform: mhz19
     co2:
       name: "MH-Z19 CO2 Value"
+      on_value_range:
+        - below: 800
+          then:
+            - light.turn_on:
+                id: led
+                brightness: 100%
+                red: 0
+                green: 100%
+                blue: 0
+        - above: 800
+          below: 1400
+          then:
+          - light.turn_on:
+              id: led
+              brightness: 100%
+              red: 50%
+              green: 100%
+              blue: 0
+        - above: 1400
+          then:
+            - light.turn_on:
+                id: led
+                brightness: 100%
+                red: 100%
+                green: 0
+                blue: 0
     temperature:
       name: "MH-Z19 Temperature"
     update_interval: 15s
-    automatic_baseline_calibration: true
+    automatic_baseline_calibration: false
 
 light:
-  - platform: neopixelbus
-    type: GRB
+  - platform: fastled_clockless
+    id: led
+    chipset: WS2812B
     pin: 2
     num_leds: 1
-    # rgb_order: BRG
-    name: "NeoPixel Light"
+    rgb_order: GRB
+    name: "FastLED SPI Light"
