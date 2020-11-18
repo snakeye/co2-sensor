@@ -1,0 +1,77 @@
+esphome:
+  name: co2sensor
+  platform: ESP8266
+  board: esp12e
+  platformio_options:
+    monitor_speed: 115200
+    # monitor_filters: colorize
+
+    # upload_speed: 115200
+    # upload_speed: 230400
+    # upload_speed: 460800
+    upload_speed: 921600
+
+# wifi:
+#   <<: !include ./secrets.yaml
+
+#   # Enable fallback hotspot (captive portal) in case wifi connection fails
+#   # ap:
+#   #   ssid: "Co2Sensor Fallback Hotspot"
+#   #   password: "JWJsr3ppPuhL"
+
+# captive_portal:
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API
+# api:
+
+# ota:
+
+i2c:
+  sda: 4
+  scl: 5
+  scan: True
+  # id: bus_a
+
+uart:
+  rx_pin: 14
+  tx_pin: 16
+  baud_rate: 9600
+
+sensor:
+  - platform: dht
+    model: AM2302
+    pin: 12
+    temperature:
+      name: "Living Room Temperature"
+    humidity:
+      name: "Living Room Humidity"
+    update_interval: 15s
+
+  - platform: bmp280
+    temperature:
+      name: "BMP280 Temperature"
+      oversampling: 16x
+    pressure:
+      name: "BMP280 Pressure"
+    address: 0x76
+    update_interval: 15s
+
+  - platform: mhz19
+    co2:
+      name: "MH-Z19 CO2 Value"
+    temperature:
+      name: "MH-Z19 Temperature"
+    update_interval: 15s
+    automatic_baseline_calibration: true
+
+light:
+  - platform: neopixelbus
+    type: GRB
+    pin: 2
+    num_leds: 1
+    # rgb_order: BRG
+    name: "NeoPixel Light"
