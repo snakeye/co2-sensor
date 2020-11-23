@@ -11,14 +11,16 @@ esphome:
     # upload_speed: 460800
     upload_speed: 921600
 
-  on_boot:
-    - light.turn_on:
-        id: led
-        brightness: 100%
-        red: 100%
-        green: 100%
-        blue: 100%
+    lib_deps:
+      - "adafruit/RTClib"
+      - "ottowinter/AsyncMqttClient-esphome"
 
+  includes:
+    - "custom/ds3231/ds3231.h"
+
+  on_boot:
+    - light.turn_off:
+        id: led
 
 wifi:
   <<: !include ./secrets.yaml
@@ -35,7 +37,7 @@ logger:
   level: DEBUG
 
 # Enable Home Assistant API
-api:
+# api:
 
 ota:
 
@@ -52,6 +54,24 @@ uart:
   rx_pin: 14
   tx_pin: 16
   baud_rate: 9600
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+    on_time:
+      - seconds: 0
+        minutes: "*"
+        then:
+          lambda: |-
+            auto time = id(sntp_time).now();
+            // id(epoch_time).set_level(float(time.timestamp));
+  # - platform: ds3231
+  #   id: rtc_time
+
+sun:
+  latitude: 51.2119957
+  longitude: 6.6281018
 
 sensor:
   # - platform: dht
@@ -76,35 +96,71 @@ sensor:
     co2:
       name: "MH-Z19 CO2 Value"
       on_value_range:
-        - below: 800
+        - below: 1400
           then:
-            - light.turn_on:
+            - light.turn_off:
                 id: led
-                brightness: 100%
-                red: 0
-                green: 100%
-                blue: 0
-        - above: 800
-          below: 1400
-          then:
-          - light.turn_on:
-              id: led
-              brightness: 100%
-              red: 50%
-              green: 100%
-              blue: 0
         - above: 1400
           then:
             - light.turn_on:
                 id: led
-                brightness: 100%
+                brightness: 10%
                 red: 100%
                 green: 0
                 blue: 0
     temperature:
       name: "MH-Z19 Temperature"
     update_interval: 15s
-    automatic_baseline_calibration: false
+    automatic_baseline_calibration: true
+
+  # - platform: custom
+  #   id: rtc
+  #   lambda: |-
+  #     auto rtc_sensor = new DS3231Sensor();
+  #     App.register_component(rtc_sensor);
+  #     return {
+  #       rtc_sensor->year,
+  #       rtc_sensor->month,
+  #       rtc_sensor->day,
+  #       rtc_sensor->hour,
+  #       rtc_sensor->minute,
+  #       rtc_sensor->second,
+  #       rtc_sensor->temperature
+  #     };
+  #   sensors:
+  #     - name: "RTC Clock Year"
+  #       accuracy_decimals: 0
+  #     - name: "RTC Clock Month"
+  #       accuracy_decimals: 0
+  #     - name: "RTC Clock Day"
+  #       accuracy_decimals: 0
+  #     - name: "RTC Clock Hour"
+  #       accuracy_decimals: 0
+  #     - name: "RTC Clock Minute"
+  #       accuracy_decimals: 0
+  #     - name: "RTC Clock Second"
+  #       accuracy_decimals: 0
+  #     - name: "RTC Clock Temperature"
+  #       accuracy_decimals: 1
+
+  - platform: sun
+    name: Sun Elevation
+    type: elevation
+  - platform: sun
+    name: Sun Azimuth
+    type: azimuth
+
+text_sensor:
+  - platform: sun
+    name: Sun Next Sunrise
+    type: sunrise
+  - platform: sun
+    name: Sun Next Sunset
+    type: sunset
+  - platform: template
+    name: Current Time
+    lambda: |-
+      return id(sntp_time).now().strftime("%Y-%m-%d %H:%M");
 
 light:
   - platform: fastled_clockless
@@ -114,3 +170,8 @@ light:
     num_leds: 1
     rgb_order: GRB
     name: "FastLED SPI Light"
+
+mqtt:
+  broker: 192.168.1.100
+  username: co2sensor
+  password: MyMQTTPassword
