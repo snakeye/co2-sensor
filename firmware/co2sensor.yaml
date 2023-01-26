@@ -12,9 +12,10 @@ esphome:
     # upload_speed: 460800
     upload_speed: 921600
 
-  # on_boot:
-  #   - light.turn_off:
-  #       id: rgb_led
+  on_boot:
+    - light.turn_on:
+        id: rgb_led
+        effect: co2_rgb
 
 wifi:
   <<: !include ./secrets.yaml
@@ -74,39 +75,10 @@ sensor:
       id: mhz19_co2
       name: "MH-Z19 CO2 Value"
       unit_of_measurement: ppa
-      on_value_range:
-        - below: 800
-          then:
-            - light.turn_on:
-                id: rgb_led
-                brightness: 25%
-                red: !lambda |-
-                  return (id(mhz19_co2).state - 400.0) / (800.0 - 400.0);
-                green: 100%
-                blue: 0
-        - above: 800
-          below: 1400
-          then:
-            - light.turn_on:
-                id: rgb_led
-                brightness: 50%
-                red: 100%
-                green: !lambda |-
-                  return 1.0 - (id(mhz19_co2).state - 800.0) / (1400.0 - 800.0);
-                blue: 0
-        - above: 1400
-          then:
-            - light.turn_on:
-                id: rgb_led
-                brightness: 100%
-                red: 100%
-                green: 0
-                blue: 0
-
     temperature:
       id: mhz19_temp
       name: "MH-Z19 Temperature"
-    update_interval: 15s
+    update_interval: 10s
     automatic_baseline_calibration: true
 
   - platform: sun
@@ -138,11 +110,36 @@ light:
     pin: 2
     num_leds: 1
     name: "NeoPixel Light"
+    effects:
+      - lambda:
+          name: co2_rgb
+          update_interval: 10s
+          lambda: |-
+            auto state = id(mhz19_co2).state;
+            auto call = id(rgb_led).turn_on();
+            call.set_transition_length(10 * 1000);
+            if(state < 1000) {
+              call.set_rgb((state - 400.0) / (1000.0 - 400.0), 1.0, 0);
+              call.set_brightness(0.25);
+            }
+            else if(state >= 1000 && state < 2000) 
+            {
+              call.set_rgb(1.0, 1.0 - (state - 1000.0) / (2000.0 - 1000.0),  0);
+              call.set_brightness(0.5);
+            }
+            else {
+              call.set_rgb(1.0, 0, 0);
+              call.set_brightness(1.0);
+            }
+            call.perform();
 
 font:
   - file: 'slkscr.ttf'
     id: font_small
     size: 8
+  - file: 'BebasNeue-Regular.ttf'
+    id: font_medium
+    size: 16
   - file: 'BebasNeue-Regular.ttf'
     id: font_large
     size: 32
@@ -156,8 +153,8 @@ display:
       it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(sntp_time).now());
       it.strftime(128/2, 40, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(sntp_time).now());
 
-      it.printf(0, 56, id(font_small), TextAlign::BASELINE_LEFT, "%.0fhPa", id(bmp280_pres).state);
-      it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
+      // it.printf(0, 56, id(font_small), TextAlign::BASELINE_LEFT, "%.0fhPa", id(bmp280_pres).state);
+      // it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
 
-      it.printf(0, 64, id(font_small), TextAlign::BASELINE_LEFT, "%dppa", int(id(mhz19_co2).state));
-      it.printf(128, 64, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(mhz19_temp).state);
+      it.printf(0, 64, id(font_medium), TextAlign::BASELINE_LEFT, "%d ppa", int(id(mhz19_co2).state));
+      // it.printf(128, 64, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(mhz19_temp).state);
