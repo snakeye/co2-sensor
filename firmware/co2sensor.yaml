@@ -16,6 +16,7 @@ esphome:
     - light.turn_on:
         id: rgb_led
         effect: co2_rgb
+    - ds1307.read_time:
 
 wifi:
   <<: !include ./secrets.yaml
@@ -42,16 +43,15 @@ uart:
   baud_rate: 9600
 
 time:
+  - platform: ds1307
+    id: rtc_time
   - platform: sntp
     id: sntp_time
     timezone: Europe/Berlin
-    on_time:
-      - seconds: 0
-        minutes: "*"
-        then:
-          lambda: |-
-            auto time = id(sntp_time).now();
-            // id(epoch_time).set_level(float(time.timestamp));
+    on_time_sync:
+      then:
+        ds1307.write_time:
+          id: rtc_time
 
 sun:
   latitude: 51.2119957
@@ -98,10 +98,10 @@ text_sensor:
     name: Sun Next Sunset
     type: sunset
   - platform: template
-    id: sntp_current_time
-    name: Current Time
+    id: rtc_current_time
+    name: Current RTC Time
     lambda: |-
-      return id(sntp_time).now().strftime("%Y-%m-%d %H:%M");
+      return id(rtc_time).now().strftime("%Y-%m-%d %H:%M");
 
 light:
   - platform: neopixelbus
@@ -150,8 +150,8 @@ display:
     address: 0x3C
     lambda: |-
       // Print time in HH:MM format
-      it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(sntp_time).now());
-      it.strftime(128/2, 40, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(sntp_time).now());
+      it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(rtc_time).now());
+      it.strftime(128/2, 40, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(rtc_time).now());
 
       // it.printf(0, 56, id(font_small), TextAlign::BASELINE_LEFT, "%.0fhPa", id(bmp280_pres).state);
       // it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
