@@ -6,7 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-platformio = "==5.0.3"
+esphome = "*"
+pillow = "*"
 
 [requires]
 python_version = "3"

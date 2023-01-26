@@ -2,6 +2,7 @@ esphome:
   name: co2sensor
   platform: ESP8266
   board: esp12e
+
   platformio_options:
     monitor_speed: 115200
     # monitor_filters: colorize
@@ -11,46 +12,30 @@ esphome:
     # upload_speed: 460800
     upload_speed: 921600
 
-    lib_deps:
-      - "adafruit/RTClib"
-      - "ottowinter/AsyncMqttClient-esphome"
-
-  includes:
-    - "custom/ds3231/ds3231.h"
-
-  on_boot:
-    - light.turn_off:
-        id: led
+  # on_boot:
+  #   - light.turn_off:
+  #       id: rgb_led
 
 wifi:
   <<: !include ./secrets.yaml
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  # ap:
-  #   ssid: "Co2Sensor Fallback Hotspot"
-  #   password: "JWJsr3ppPuhL"
-
-# captive_portal:
 
 # Enable logging
 logger:
   level: DEBUG
 
-# Enable Home Assistant API
-# api:
-
 ota:
 
 web_server:
   port: 80
+  ota: false
 
 i2c:
   sda: 4
   scl: 5
   scan: True
-  # id: bus_a
 
 uart:
+  id: mhz19_uart
   rx_pin: 14
   tx_pin: 16
   baud_rate: 9600
@@ -66,82 +51,63 @@ time:
           lambda: |-
             auto time = id(sntp_time).now();
             // id(epoch_time).set_level(float(time.timestamp));
-  # - platform: ds3231
-  #   id: rtc_time
 
 sun:
   latitude: 51.2119957
   longitude: 6.6281018
 
 sensor:
-  # - platform: dht
-  #   model: AM2302
-  #   pin: 12
-  #   temperature:
-  #     name: "Living Room Temperature"
-  #   humidity:
-  #     name: "Living Room Humidity"
-  #   update_interval: 15s
-
   - platform: bmp280
     temperature:
+      id: bmp280_temp
       name: "BMP280 Temperature"
       oversampling: 16x
     pressure:
+      id: bmp280_pres
       name: "BMP280 Pressure"
     address: 0x76
     update_interval: 15s
 
   - platform: mhz19
+    uart_id: mhz19_uart
     co2:
+      id: mhz19_co2
       name: "MH-Z19 CO2 Value"
+      unit_of_measurement: ppa
       on_value_range:
-        - below: 1400
+        - below: 800
           then:
-            - light.turn_off:
-                id: led
+            - light.turn_on:
+                id: rgb_led
+                brightness: 25%
+                red: !lambda |-
+                  return (id(mhz19_co2).state - 400.0) / (800.0 - 400.0);
+                green: 100%
+                blue: 0
+        - above: 800
+          below: 1400
+          then:
+            - light.turn_on:
+                id: rgb_led
+                brightness: 50%
+                red: 100%
+                green: !lambda |-
+                  return 1.0 - (id(mhz19_co2).state - 800.0) / (1400.0 - 800.0);
+                blue: 0
         - above: 1400
           then:
             - light.turn_on:
-                id: led
-                brightness: 10%
+                id: rgb_led
+                brightness: 100%
                 red: 100%
                 green: 0
                 blue: 0
+
     temperature:
+      id: mhz19_temp
       name: "MH-Z19 Temperature"
     update_interval: 15s
     automatic_baseline_calibration: true
-
-  # - platform: custom
-  #   id: rtc
-  #   lambda: |-
-  #     auto rtc_sensor = new DS3231Sensor();
-  #     App.register_component(rtc_sensor);
-  #     return {
-  #       rtc_sensor->year,
-  #       rtc_sensor->month,
-  #       rtc_sensor->day,
-  #       rtc_sensor->hour,
-  #       rtc_sensor->minute,
-  #       rtc_sensor->second,
-  #       rtc_sensor->temperature
-  #     };
-  #   sensors:
-  #     - name: "RTC Clock Year"
-  #       accuracy_decimals: 0
-  #     - name: "RTC Clock Month"
-  #       accuracy_decimals: 0
-  #     - name: "RTC Clock Day"
-  #       accuracy_decimals: 0
-  #     - name: "RTC Clock Hour"
-  #       accuracy_decimals: 0
-  #     - name: "RTC Clock Minute"
-  #       accuracy_decimals: 0
-  #     - name: "RTC Clock Second"
-  #       accuracy_decimals: 0
-  #     - name: "RTC Clock Temperature"
-  #       accuracy_decimals: 1
 
   - platform: sun
     name: Sun Elevation
@@ -152,26 +118,46 @@ sensor:
 
 text_sensor:
   - platform: sun
+    id: sunrise
     name: Sun Next Sunrise
     type: sunrise
   - platform: sun
+    id: sunset
     name: Sun Next Sunset
     type: sunset
   - platform: template
+    id: sntp_current_time
     name: Current Time
     lambda: |-
       return id(sntp_time).now().strftime("%Y-%m-%d %H:%M");
 
 light:
-  - platform: fastled_clockless
-    id: led
-    chipset: WS2812B
+  - platform: neopixelbus
+    id: rgb_led
+    variant: WS2812X
     pin: 2
     num_leds: 1
-    rgb_order: GRB
-    name: "FastLED SPI Light"
+    name: "NeoPixel Light"
 
-mqtt:
-  broker: 192.168.1.100
-  username: co2sensor
-  password: MyMQTTPassword
+font:
+  - file: 'slkscr.ttf'
+    id: font_small
+    size: 8
+  - file: 'BebasNeue-Regular.ttf'
+    id: font_large
+    size: 32
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306_128X64"
+    address: 0x3C
+    lambda: |-
+      // Print time in HH:MM format
+      it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(sntp_time).now());
+      it.strftime(128/2, 40, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(sntp_time).now());
+
+      it.printf(0, 56, id(font_small), TextAlign::BASELINE_LEFT, "%.0fhPa", id(bmp280_pres).state);
+      it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
+
+      it.printf(0, 64, id(font_small), TextAlign::BASELINE_LEFT, "%dppa", int(id(mhz19_co2).state));
+      it.printf(128, 64, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(mhz19_temp).state);
