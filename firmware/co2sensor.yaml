@@ -137,7 +137,7 @@ font:
   - file: 'slkscr.ttf'
     id: font_small
     size: 8
-  - file: 'BebasNeue-Regular.ttf'
+  - file: 'orange kid.ttf'
     id: font_medium
     size: 16
   - file: 'BebasNeue-Regular.ttf'
@@ -156,5 +156,5 @@ display:
       // it.printf(0, 56, id(font_small), TextAlign::BASELINE_LEFT, "%.0fhPa", id(bmp280_pres).state);
       // it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
 
-      it.printf(0, 64, id(font_medium), TextAlign::BASELINE_LEFT, "%d ppa", int(id(mhz19_co2).state));
+      it.printf(128, 64, id(font_medium), TextAlign::BASELINE_RIGHT, "%d ppa", int(id(mhz19_co2).state));
       // it.printf(128, 64, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(mhz19_temp).state);
