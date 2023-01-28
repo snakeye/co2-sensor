@@ -16768,146 +16768,6 @@ Metric Code Size 4564</description>
 </deviceset>
 </devicesets>
 </library>
-<library name="RHT03_DHT-22_AM2302">
-<description>&lt;h1&gt;RHT03 / DHT-22 / AM2302 library&lt;/h1&gt;
-&lt;p&gt;
-Library with devices (schematic symbol and packages) for the RHT03 / DHT-22 / AM2302 digital relative humidity and tempearture sensor.&lt;br /&gt;
-Warning: Package does not include tKeepout areas so that the part may optionally be placed on a riser with components underneath.  Please keep the package outline and bent-pin space in mind.
-&lt;/p&gt;</description>
-<packages>
-<package name="RHT03_DHT-22">
-<description>&lt;h1&gt;RHT03 / DHT-22&lt;/h1&gt;
-&lt;p&gt;
-Package for the RHT03 / DHT-22 relative humidity and temperature sensor.
-&lt;/p&gt;</description>
-<pad name="VDD" x="-3.81" y="0" drill="0.8" shape="octagon"/>
-<pad name="DATA" x="-1.27" y="0" drill="0.8"/>
-<pad name="NULL" x="1.27" y="0" drill="0.8"/>
-<pad name="GND" x="3.81" y="0" drill="0.8"/>
-<wire x1="-7.55" y1="2.5" x2="7.55" y2="2.5" width="0.127" layer="21"/>
-<wire x1="-7.55" y1="-5.2" x2="7.55" y2="-5.2" width="0.127" layer="21"/>
-<wire x1="-7.55" y1="2.5" x2="-7.55" y2="0.8" width="0.127" layer="21"/>
-<wire x1="-7.55" y1="0.8" x2="-7.55" y2="-5.2" width="0.127" layer="21"/>
-<wire x1="7.55" y1="2.5" x2="7.55" y2="0.8" width="0.127" layer="21"/>
-<wire x1="7.55" y1="0.8" x2="7.55" y2="-5.2" width="0.127" layer="21"/>
-<wire x1="-7.55" y1="0.8" x2="7.55" y2="0.8" width="0.127" layer="21"/>
-<text x="-6" y="-4.5" size="1.27" layer="21" font="vector">&gt;NAME</text>
-<text x="-6" y="-2.5" size="1.27" layer="21" font="vector">&gt;VALUE</text>
-</package>
-<package name="AM2302">
-<description>&lt;h1&gt;AM2302&lt;/h1&gt;
-&lt;p&gt;
-Package for the AM2302 wired variant of the RHT03/DHT-22 relative humidity and temperature sensor.
-&lt;/p&gt;</description>
-<pad name="VDD" x="-3.81" y="0" drill="0.8" shape="octagon"/>
-<pad name="DATA" x="-1.27" y="0" drill="0.8"/>
-<pad name="NULL" x="1.27" y="0" drill="0.8"/>
-<pad name="GND" x="3.81" y="0" drill="0.8"/>
-<text x="-5.08" y="-2.667" size="1.27" layer="21" font="vector">&gt;NAME</text>
-<wire x1="-5.08" y1="-0.635" x2="-4.445" y2="-1.27" width="0.127" layer="21"/>
-<wire x1="-4.445" y1="-1.27" x2="5.08" y2="-1.27" width="0.127" layer="21"/>
-<wire x1="5.08" y1="-1.27" x2="5.08" y2="1.27" width="0.127" layer="21"/>
-<wire x1="5.08" y1="1.27" x2="-5.08" y2="1.27" width="0.127" layer="21"/>
-<wire x1="-5.08" y1="1.27" x2="-5.08" y2="-0.635" width="0.127" layer="21"/>
-<text x="-5.08" y="1.397" size="1.27" layer="21">&gt;VALUE</text>
-</package>
-<package name="RHT03_DHT-22/RA">
-<description>&lt;h1&gt;RHT03 / DHT-22 - RIGHT ANGLE&lt;/h1&gt;
-&lt;p&gt;
-Right angle package for the RHT03 / DHT-22 relative humidity and temperature sensor.
-&lt;/p&gt;</description>
-<pad name="VDD" x="-3.81" y="0" drill="0.8" shape="octagon"/>
-<pad name="DATA" x="-1.27" y="0" drill="0.8"/>
-<pad name="NULL" x="1.27" y="0" drill="0.8"/>
-<pad name="GND" x="3.81" y="0" drill="0.8"/>
-<wire x1="-7.55" y1="2.5" x2="7.55" y2="2.5" width="0.127" layer="21"/>
-<text x="-5.08" y="5.08" size="1.27" layer="21" font="vector" rot="R90">&gt;NAME</text>
-<wire x1="-7.55" y1="2.5" x2="-7.55" y2="22.5" width="0.127" layer="21"/>
-<wire x1="7.55" y1="2.5" x2="7.55" y2="22.5" width="0.127" layer="21"/>
-<wire x1="-7.55" y1="22.5" x2="7.55" y2="22.5" width="0.127" layer="21"/>
-<wire x1="-5.25" y1="27.1" x2="5.25" y2="27.1" width="0.127" layer="21"/>
-<wire x1="7.55" y1="22.5" x2="5.25" y2="27.1" width="0.127" layer="21"/>
-<wire x1="-7.55" y1="22.5" x2="-5.25" y2="27.1" width="0.127" layer="21"/>
-<hole x="0" y="24.5" drill="3.25"/>
-<wire x1="-3.81" y1="1.27" x2="-3.81" y2="2.54" width="0.127" layer="21"/>
-<wire x1="-1.27" y1="1.27" x2="-1.27" y2="2.54" width="0.127" layer="21"/>
-<wire x1="1.27" y1="1.27" x2="1.27" y2="2.54" width="0.127" layer="21"/>
-<wire x1="3.81" y1="1.27" x2="3.81" y2="2.54" width="0.127" layer="21"/>
-<text x="0" y="12.5" size="1.27" layer="21" font="vector" rot="R90" align="center">&gt;VALUE</text>
-</package>
-</packages>
-<symbols>
-<symbol name="RHT03">
-<description>&lt;h1&gt;RHT03 / DHT-22 / AM2302&lt;/h1&gt;
-&lt;p&gt;
-Symbol for the RHT03 / DHT-22 / AM2302 relative humidity and temperature sensor.
-&lt;/p&gt;</description>
-<wire x1="-5.08" y1="10.16" x2="-5.08" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="-5.08" y1="-10.16" x2="5.08" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="5.08" y1="-10.16" x2="5.08" y2="10.16" width="0.254" layer="94"/>
-<wire x1="5.08" y1="10.16" x2="-5.08" y2="10.16" width="0.254" layer="94"/>
-<pin name="VDD" x="-10.16" y="7.62" length="middle" direction="pwr"/>
-<pin name="DATA" x="-10.16" y="2.54" length="middle"/>
-<pin name="NULL" x="-10.16" y="-2.54" visible="pad" length="middle" direction="nc"/>
-<pin name="GND" x="-10.16" y="-7.62" length="middle" direction="pwr"/>
-<text x="-5.08" y="11.43" size="1.27" layer="94">&gt;NAME</text>
-<text x="-5.08" y="-12.7" size="1.27" layer="94">&gt;VALUE</text>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="RHT03_DHT-22_AM2302" prefix="U" uservalue="yes">
-<description>&lt;h1&gt;RHT03 / DHT-22 / AM2302&lt;/h1&gt;
-&lt;p&gt;
-Packages and symbol for the RHT03 / DHT-22 relative humidity and temperature sensor.&lt;br /&gt;
-Note: The AM2302 is a wired version of the DHT-22 which typically requires less clearance and is thus provided as a separate package.
-&lt;/p&gt;</description>
-<gates>
-<gate name="G$1" symbol="RHT03" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="RHT03_DHT-22">
-<connects>
-<connect gate="G$1" pin="DATA" pad="DATA"/>
-<connect gate="G$1" pin="GND" pad="GND"/>
-<connect gate="G$1" pin="NULL" pad="NULL"/>
-<connect gate="G$1" pin="VDD" pad="VDD"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="PROD_ID" value="SEN-10167"/>
-</technology>
-</technologies>
-</device>
-<device name="WIRED" package="AM2302">
-<connects>
-<connect gate="G$1" pin="DATA" pad="DATA"/>
-<connect gate="G$1" pin="GND" pad="GND"/>
-<connect gate="G$1" pin="NULL" pad="NULL"/>
-<connect gate="G$1" pin="VDD" pad="VDD"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="PROD_ID" value="SEN-10167"/>
-</technology>
-</technologies>
-</device>
-<device name="RA" package="RHT03_DHT-22/RA">
-<connects>
-<connect gate="G$1" pin="DATA" pad="DATA"/>
-<connect gate="G$1" pin="GND" pad="GND"/>
-<connect gate="G$1" pin="NULL" pad="NULL"/>
-<connect gate="G$1" pin="VDD" pad="VDD"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="PROD_ID" value="SEN-10167"/>
-</technology>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 <library name="USB-C">
 <packages>
 <package name="USB-C">
@@ -17788,15 +17648,11 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <part name="R2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="M0805" package3d_urn="urn:adsk.eagle:package:23556/1" value="4.7k"/>
 <part name="+3V3" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
 <part name="C2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="CPOL-EU" device="CT3216" package3d_urn="urn:adsk.eagle:package:23327/2" value="100mF"/>
-<part name="U2" library="RHT03_DHT-22_AM2302" deviceset="RHT03_DHT-22_AM2302" device="WIRED" value="dht22"/>
-<part name="P+4" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+5V" device=""/>
-<part name="GND10" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="C3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:23617/2" value="100n"/>
 <part name="GND8" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND9" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="C4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:23617/2" value="10u"/>
 <part name="R3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="M0805" package3d_urn="urn:adsk.eagle:package:23556/1" value="4.7k"/>
-<part name="R4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="M0805" package3d_urn="urn:adsk.eagle:package:23556/1" value="10k"/>
 <part name="U$1" library="USB-C" deviceset="USB-C" device=""/>
 <part name="GND1" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="JP1" library="pinhead" library_urn="urn:adsk.eagle:library:325" deviceset="PINHD-1X4" device="" package3d_urn="urn:adsk.eagle:package:22407/2"/>
@@ -17874,16 +17730,6 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <attribute name="NAME" x="54.483" y="-9.6774" size="1.778" layer="95"/>
 <attribute name="VALUE" x="54.483" y="-14.7574" size="1.778" layer="96"/>
 </instance>
-<instance part="U2" gate="G$1" x="17.78" y="-73.66" smashed="yes" rot="MR0">
-<attribute name="NAME" x="22.86" y="-62.23" size="1.27" layer="94" rot="MR0"/>
-<attribute name="VALUE" x="22.86" y="-86.36" size="1.27" layer="94" rot="MR0"/>
-</instance>
-<instance part="P+4" gate="1" x="45.72" y="-60.96" smashed="yes" rot="MR90">
-<attribute name="VALUE" x="40.64" y="-63.5" size="1.778" layer="96" rot="MR180"/>
-</instance>
-<instance part="GND10" gate="1" x="33.02" y="-83.82" smashed="yes" rot="MR0">
-<attribute name="VALUE" x="35.56" y="-86.36" size="1.778" layer="96" rot="MR0"/>
-</instance>
 <instance part="C3" gate="G$1" x="60.96" y="-10.16" smashed="yes">
 <attribute name="NAME" x="62.484" y="-9.779" size="1.778" layer="95"/>
 <attribute name="VALUE" x="62.484" y="-14.859" size="1.778" layer="96"/>
@@ -17901,10 +17747,6 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <instance part="R3" gate="G$1" x="144.78" y="-27.94" smashed="yes" rot="R270">
 <attribute name="NAME" x="146.2786" y="-24.13" size="1.778" layer="95" rot="R270"/>
 <attribute name="VALUE" x="141.478" y="-24.13" size="1.778" layer="96" rot="R270"/>
-</instance>
-<instance part="R4" gate="G$1" x="35.56" y="-66.04" smashed="yes" rot="MR90">
-<attribute name="NAME" x="37.0586" y="-69.85" size="1.778" layer="95" rot="MR90"/>
-<attribute name="VALUE" x="32.258" y="-69.85" size="1.778" layer="96" rot="MR90"/>
 </instance>
 <instance part="U$1" gate="G$1" x="15.24" y="-2.54" smashed="yes">
 <attribute name="NAME" x="5.08" y="0.508" size="1.27" layer="94"/>
@@ -17997,11 +17839,6 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <pinref part="GND7" gate="1" pin="GND"/>
 <pinref part="C2" gate="G$1" pin="-"/>
 <wire x1="53.34" y1="-17.78" x2="53.34" y2="-15.24" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="U2" gate="G$1" pin="GND"/>
-<pinref part="GND10" gate="1" pin="GND"/>
-<wire x1="33.02" y1="-81.28" x2="27.94" y2="-81.28" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C3" gate="G$1" pin="2"/>
@@ -18175,28 +18012,11 @@ Note: The AM2302 is a wired version of the DHT-22 which typically requires less 
 <pinref part="U$1" gate="G$1" pin="VBUS"/>
 </segment>
 <segment>
-<pinref part="R4" gate="G$1" pin="2"/>
-<pinref part="P+4" gate="1" pin="+5V"/>
-<wire x1="43.18" y1="-60.96" x2="35.56" y2="-60.96" width="0.1524" layer="91"/>
-<pinref part="U2" gate="G$1" pin="VDD"/>
-<wire x1="35.56" y1="-60.96" x2="27.94" y2="-60.96" width="0.1524" layer="91"/>
-<wire x1="27.94" y1="-60.96" x2="27.94" y2="-66.04" width="0.1524" layer="91"/>
-<junction x="35.56" y="-60.96"/>
-</segment>
-<segment>
 <pinref part="LED1" gate="G$1" pin="VDD"/>
 <pinref part="P+2" gate="1" pin="+5V"/>
 </segment>
 </net>
 <net name="DHT22" class="0">
-<segment>
-<pinref part="U2" gate="G$1" pin="DATA"/>
-<wire x1="27.94" y1="-71.12" x2="35.56" y2="-71.12" width="0.1524" layer="91"/>
-<label x="40.64" y="-71.12" size="1.016" layer="95" rot="MR180" xref="yes"/>
-<pinref part="R4" gate="G$1" pin="1"/>
-<wire x1="35.56" y1="-71.12" x2="40.64" y2="-71.12" width="0.1524" layer="91"/>
-<junction x="35.56" y="-71.12"/>
-</segment>
 <segment>
 <pinref part="U1" gate="G$1" pin="GPIO12"/>
 <wire x1="104.14" y1="-20.32" x2="101.6" y2="-20.32" width="0.1524" layer="91"/>
