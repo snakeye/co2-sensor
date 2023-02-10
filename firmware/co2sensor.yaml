@@ -79,7 +79,7 @@ sensor:
       id: mhz19_temp
       name: "MH-Z19 Temperature"
     update_interval: 10s
-    automatic_baseline_calibration: true
+    automatic_baseline_calibration: false
 
   - platform: sun
     name: Sun Elevation
@@ -115,22 +115,31 @@ light:
           name: co2_rgb
           update_interval: 10s
           lambda: |-
+            // base values
+            auto base = 400.0;
+            auto warning = 1000.0;
+            auto danger = 2000.0;
+            // current state
             auto state = id(mhz19_co2).state;
+            //
             auto call = id(rgb_led).turn_on();
             call.set_transition_length(10 * 1000);
-            if(state < 1000) {
-              call.set_rgb((state - 400.0) / (1000.0 - 400.0), 1.0, 0);
-              call.set_brightness(0.25);
+            // color
+            if(state < warning) {
+              call.set_rgb((state - base) / (warning - base), 1.0, 0);
             }
-            else if(state >= 1000 && state < 2000) 
+            else if(state >= warning && state < danger) 
             {
-              call.set_rgb(1.0, 1.0 - (state - 1000.0) / (2000.0 - 1000.0),  0);
-              call.set_brightness(0.5);
+              call.set_rgb(1.0, 1.0 - (state - warning) / (danger - warning),  0);
             }
             else {
               call.set_rgb(1.0, 0, 0);
-              call.set_brightness(1.0);
             }
+            // brightness
+            auto brightness = 0.25 + 0.75 * (state - base) / (danger - base);
+            if (brightness > 1.0) brightness = 1.0;
+            // apply
+            call.set_brightness(brightness);
             call.perform();
 
 font:
