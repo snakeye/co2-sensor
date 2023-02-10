@@ -23,7 +23,7 @@ wifi:
 
 # Enable logging
 logger:
-  level: DEBUG
+  level: INFO
 
 ota:
 
@@ -67,7 +67,7 @@ sensor:
       id: bmp280_pres
       name: "BMP280 Pressure"
     address: 0x76
-    update_interval: 15s
+    update_interval: 10s
 
   - platform: mhz19
     uart_id: mhz19_uart
@@ -84,6 +84,7 @@ sensor:
   - platform: sun
     name: Sun Elevation
     type: elevation
+    
   - platform: sun
     name: Sun Azimuth
     type: azimuth
@@ -93,10 +94,12 @@ text_sensor:
     id: sunrise
     name: Sun Next Sunrise
     type: sunrise
+
   - platform: sun
     id: sunset
     name: Sun Next Sunset
     type: sunset
+
   - platform: template
     id: rtc_current_time
     name: Current RTC Time
@@ -143,13 +146,13 @@ light:
             call.perform();
 
 font:
-  - file: 'slkscr.ttf'
+  - file: 'font-medium.ttf'
     id: font_small
     size: 8
-  - file: 'orange kid.ttf'
+  - file: 'font-large.ttf'
     id: font_medium
-    size: 16
-  - file: 'BebasNeue-Regular.ttf'
+    size: 14
+  - file: 'font-large.ttf'
     id: font_large
     size: 32
 
@@ -160,10 +163,10 @@ display:
     lambda: |-
       // Print time in HH:MM format
       it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(rtc_time).now());
-      it.strftime(128/2, 40, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(rtc_time).now());
+      it.strftime(128/2, 44, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(rtc_time).now());
 
-      // it.printf(0, 56, id(font_small), TextAlign::BASELINE_LEFT, "%.0fhPa", id(bmp280_pres).state);
+      it.printf(0, 64, id(font_medium), TextAlign::BASELINE_LEFT, "%.0f", id(bmp280_pres).state);
       // it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
 
-      it.printf(128, 64, id(font_medium), TextAlign::BASELINE_RIGHT, "%d ppa", int(id(mhz19_co2).state));
+      it.printf(128, 64, id(font_medium), TextAlign::BASELINE_RIGHT, "%d", int(id(mhz19_co2).state));
       // it.printf(128, 64, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(mhz19_temp).state);
