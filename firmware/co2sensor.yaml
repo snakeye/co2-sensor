@@ -158,15 +158,51 @@ font:
 
 display:
   - platform: ssd1306_i2c
+    id: oled_display
     model: "SSD1306_128X64"
     address: 0x3C
-    lambda: |-
-      // Print time in HH:MM format
-      it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(rtc_time).now());
-      it.strftime(128/2, 44, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(rtc_time).now());
+    pages:
+      - id: page1
+        lambda: |-
+          // Print time in HH:MM format
+          it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(rtc_time).now());
+          it.strftime(128/2, 44, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(rtc_time).now());
 
-      it.printf(0, 64, id(font_medium), TextAlign::BASELINE_LEFT, "%.0f", id(bmp280_pres).state);
-      // it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
+          it.printf(0, 64, id(font_medium), TextAlign::BASELINE_LEFT, "%.0f hPa", id(bmp280_pres).state);
+          it.graph(64, 64 - 16, id(pressure_graph));
 
-      it.printf(128, 64, id(font_medium), TextAlign::BASELINE_RIGHT, "%d", int(id(mhz19_co2).state));
-      // it.printf(128, 64, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(mhz19_temp).state);
+          // it.printf(128, 56, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(bmp280_temp).state);
+
+          // it.printf(128, 64, id(font_medium), TextAlign::BASELINE_RIGHT, "%d", int(id(mhz19_co2).state));
+          // it.printf(128, 64, id(font_small), TextAlign::BASELINE_RIGHT, "%.1fC", id(mhz19_temp).state);
+
+      - id: page2
+        lambda: |-
+          // Print time in HH:MM format
+          it.strftime(128/2, 32, id(font_large), TextAlign::BASELINE_CENTER, "%H:%M", id(rtc_time).now());
+          it.strftime(128/2, 44, id(font_small), TextAlign::BASELINE_CENTER, "%d %m %Y", id(rtc_time).now());
+
+          it.printf(0, 64, id(font_medium), TextAlign::BASELINE_LEFT, "%d ppa", int(id(mhz19_co2).state));
+          it.graph(64, 64 - 16, id(co2_graph));
+
+
+interval:
+  - interval: 5s
+    then:
+      - display.page.show_next: oled_display
+      - component.update: oled_display
+
+graph:
+  - id: co2_graph
+    sensor: mhz19_co2
+    duration: 1h
+    width: 64
+    height: 16
+    border: false
+
+  - id: pressure_graph
+    sensor: bmp280_pres
+    duration: 24h
+    width: 64
+    height: 16
+    border: false
