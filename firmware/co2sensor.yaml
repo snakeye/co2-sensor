@@ -25,6 +25,8 @@ wifi:
 logger:
   level: INFO
 
+api:
+
 ota:
 
 web_server:
@@ -45,13 +47,15 @@ uart:
 time:
   - platform: ds1307
     id: rtc_time
+    update_interval: never
   - platform: sntp
     id: sntp_time
     timezone: Europe/Berlin
     on_time_sync:
       then:
-        ds1307.write_time:
-          id: rtc_time
+        - ds1307.write_time:
+            id: rtc_time
+        - ds1307.read_time:
 
 sun:
   latitude: 51.2119957
