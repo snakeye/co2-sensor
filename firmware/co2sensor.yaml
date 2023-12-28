@@ -88,7 +88,7 @@ sensor:
   - platform: sun
     name: Sun Elevation
     type: elevation
-    
+
   - platform: sun
     name: Sun Azimuth
     type: azimuth
@@ -150,15 +150,36 @@ light:
             call.perform();
 
 font:
-  - file: 'font-medium.ttf'
+  - file: "fonts/font-medium.ttf"
     id: font_small
     size: 8
-  - file: 'font-large.ttf'
+    glyphs: [":", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "."]
+  - file: "fonts/font-large.ttf"
     id: font_medium
     size: 14
-  - file: 'font-large.ttf'
+    glyphs:
+      [
+        " ",
+        ":",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "a",
+        "h",
+        "p",
+        "P",
+      ]
+  - file: "fonts/font-large.ttf"
     id: font_large
     size: 32
+    glyphs: [":", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 display:
   - platform: ssd1306_i2c
@@ -188,7 +209,6 @@ display:
 
           it.printf(0, 64, id(font_medium), TextAlign::BASELINE_LEFT, "%d ppa", int(id(mhz19_co2).state));
           it.graph(64, 64 - 16, id(co2_graph));
-
 
 interval:
   - interval: 5s
