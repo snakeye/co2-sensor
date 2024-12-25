@@ -2,54 +2,35 @@
 
 #include <Arduino.h>
 #include <ESP8266mDNS.h>
+#include <ArduinoOTA.h>
 
-// CO2 sensor
 #include <SoftwareSerial.h>
-SoftwareSerial swSerial(14, 16);
+#include <MHZ.h>
 
-#include <MHZ19.h>
-MHZ19 mhz19;
-
-// Configuration
-#include <WiFiConfig.h>
-
-//
-#include <ESP8266WiFi.h>
-#include <FirebaseArduino.h>
-
-struct Config
-{
-    struct CO2
-    {
-        int warning = 800;
-        int danger = 1400;
-    } co2;
-    struct Firebase
-    {
-        char host[100] = {0};
-        char auth[100] = {0};
-    } firebase;
-} config;
-
-ConfigManager configManager;
-
-// WS2812
 #include <WS2812FX.h>
 
+#include <RecurringTask.h>
+
+#include "config.h"
+
+// CO2 sensor
+const auto MH_Z19_RX = 14;
+const auto MH_Z19_TX = 16;
+// SoftwareSerial swSerial(MH_Z19_RX, MH_Z19_TX);
+MHZ co2(MH_Z19_RX, MH_Z19_TX, MHZ::MHZ19B);
+// MHZ19 co2;
+
+// WS2812
 #define LED_COUNT 1
 #define LED_PIN 15
 WS2812FX ws2812fx = WS2812FX(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-//
-#include <RecurringTask.h>
+#define LEVEL_BASE 400
+#define LEVEL_WARNING 1000
+#define LEVEL_DANGER 1500
 
-//
-#include <ArduinoOTA.h>
-
-const char *hostname = "CO2 Sensor Test";
-
-const String deviceId = String("Sensor-") + String(ESP.getChipId(), HEX);
-const String firebasePath = "/" + deviceId + "/";
+#define SPEED_SLOW 5000
+#define SPEED_FAST 1000
 
 /**
  *
@@ -59,63 +40,91 @@ const String firebasePath = "/" + deviceId + "/";
 void setup()
 {
     Serial.begin(115200);
+    delay(100);
+    Serial.println(deviceName);
 
+    //
     pinMode(LED_BUILTIN, OUTPUT);
 
-    // configuration setup
-    configManager.setAPName(hostname);
-
-    configManager.addParameterGroup("co2", new Metadata("CO2", "CO2 levels for indication"))
-        .addParameter("warning", &config.co2.warning, new Metadata("Warning level"))
-        .addParameter("danger", &config.co2.danger, new Metadata("Danger level"));
-
-    configManager.addParameterGroup("firebase", new Metadata("Firebase", "Firebase configuration"))
-        .addParameter("host", config.firebase.host, 100, new Metadata("Host"))
-        .addParameter("auth", config.firebase.auth, 100, new Metadata("Token or Secret"));
-
-    configManager.begin(config);
-
-    // MH-z19b sensor setup
-    swSerial.begin(9600);
-    mhz19.setSerial(&swSerial);
-    // mhz19.setRange(5000);
+    //
+    co2.setBypassCheck(true, true);
+    co2.setDebug(false);
 
     // Indicator setup
     ws2812fx.init();
-    ws2812fx.setBrightness(50);
+    ws2812fx.setBrightness(5);
     ws2812fx.setColor(0x8800FF);
-    ws2812fx.setSpeed(200);
+    ws2812fx.setMode(FX_MODE_BREATH);
+    ws2812fx.setSpeed(SPEED_SLOW);
     ws2812fx.start();
 
     //
-    MDNS.begin(hostname);
-    MDNS.addService("http", "tcp", 80);
+    WiFi.mode(WIFI_STA);
+    WiFi.setHostname(deviceName);
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(1000);
+    }
+    Serial1.println("WiFi connected");
 
     //
-    ArduinoOTA.setHostname(hostname);
+    MDNS.begin(hostName);
+
+    //
+    ArduinoOTA.setHostname(hostName);
     ArduinoOTA.begin();
-
-    //
-    Serial.println("Starting firebase");
-    Serial.println(config.firebase.host);
-    Firebase.begin(config.firebase.host, config.firebase.auth);
-    // Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-
-    //
-    Serial.println("Go!");
-    Serial.println(deviceId);
-    Serial.println(firebasePath);
 }
 
-enum DisplayStatus
+void measureCO2()
 {
-    UNDEFINED,
-    LOADING,
-    BREATH,
-    WARNING,
-    DANGER,
-    ERROR,
-};
+    if (co2.isPreHeating())
+    {
+        // Serial.println("Preheating");
+        return;
+    }
+
+    int ppm_uart = co2.readCO2UART();
+    Serial.print("PPMuart: ");
+    if (ppm_uart > 0)
+    {
+        Serial.println(ppm_uart);
+    }
+    else
+    {
+        Serial.println("n/a");
+    }
+
+    if (ppm_uart <= LEVEL_WARNING)
+    {
+        uint32_t r = ((ppm_uart - LEVEL_BASE) * 255 / (LEVEL_WARNING - LEVEL_BASE)) & 0xFF;
+        uint32_t color = (r << 16) | (0xFF << 8) | 0x00;
+        ws2812fx.setColor(color);
+
+        ws2812fx.setBrightness(5);
+
+        uint32_t speed = SPEED_FAST + (LEVEL_DANGER - ppm_uart) * (SPEED_SLOW - SPEED_FAST) / (LEVEL_DANGER - LEVEL_BASE);
+        ws2812fx.setSpeed(speed);
+    }
+    else if (ppm_uart <= LEVEL_DANGER)
+    {
+        uint32_t g = ((LEVEL_DANGER - ppm_uart) * 255 / (LEVEL_DANGER - LEVEL_WARNING)) & 0xFF;
+        uint32_t color = (0xFF << 16) | (g << 8) | 0x00;
+        ws2812fx.setColor(color);
+
+        uint8_t brightness = 5 + (ppm_uart - LEVEL_WARNING) * (20 - 5) / (LEVEL_DANGER - LEVEL_WARNING);
+        ws2812fx.setBrightness(brightness);
+
+        uint32_t speed = SPEED_FAST + (LEVEL_DANGER - ppm_uart) * (SPEED_SLOW - SPEED_FAST) / (LEVEL_DANGER - LEVEL_BASE);
+        ws2812fx.setSpeed(speed);
+    }
+    else
+    {
+        ws2812fx.setBrightness(30);
+        ws2812fx.setColor(0xFF0000);
+        ws2812fx.setSpeed(SPEED_FAST);
+    }
+}
 
 /**
  * @brief
@@ -123,98 +132,13 @@ enum DisplayStatus
  */
 void loop()
 {
-    static DisplayStatus lastStatus = DisplayStatus::UNDEFINED;
-    static DisplayStatus status = DisplayStatus::LOADING;
-
-    // measure CO2 level every 10 seconds
-    RecurringTask::interval(10000, [&]() {
-        if (!mhz19.isReady())
-        {
-            Serial.println("CO2 not ready");
-            return;
-        }
-
-        int co2ppm = mhz19.readValue();
-
-        if (co2ppm == -1)
-        {
-            Serial.println("Error");
-
-            status = DisplayStatus::ERROR;
-        }
-        else
-        {
-            Serial.print("CO2: ");
-            Serial.println(co2ppm);
-
-            if (co2ppm >= config.co2.danger)
-            {
-                status = DisplayStatus::DANGER;
-            }
-            else if (co2ppm >= config.co2.warning)
-            {
-                status = DisplayStatus::WARNING;
-            }
-            else
-            {
-                status = DisplayStatus::BREATH;
-            }
-
-            Firebase.setInt("co2", co2ppm);
-            if (Firebase.failed())
-            {
-                Serial.print("setting /co2 failed: ");
-                Serial.println(Firebase.error());
-            }
-        }
-    });
-
-    // Change indication if status has changed and previous cycle finished
-    if (ws2812fx.isFrame() && lastStatus != status)
-    {
-        switch (status)
-        {
-        case DisplayStatus::LOADING:
-            Serial.println("Loading");
-            ws2812fx.setColor(0x0000FF);
-            ws2812fx.setMode(FX_MODE_BREATH);
-            ws2812fx.setBrightness(32);
-            break;
-        case DisplayStatus::BREATH:
-            Serial.println("Breath");
-            ws2812fx.setColor(0x00FF00);
-            ws2812fx.setMode(FX_MODE_BREATH);
-            ws2812fx.setBrightness(16);
-            break;
-        case DisplayStatus::WARNING:
-            Serial.println("Warning");
-            ws2812fx.setColor(0xFFFF00);
-            ws2812fx.setMode(FX_MODE_FADE);
-            ws2812fx.setBrightness(64);
-            break;
-        case DisplayStatus::DANGER:
-            Serial.println("Danger");
-            ws2812fx.setColor(0xFF0000);
-            ws2812fx.setMode(FX_MODE_STROBE);
-            ws2812fx.setBrightness(128);
-            break;
-        case DisplayStatus::ERROR:
-            Serial.println("Error");
-            ws2812fx.setColor(0xFF0000);
-            ws2812fx.setMode(FX_MODE_STATIC);
-            break;
-        default:
-            break;
-        }
-
-        lastStatus = status;
-    }
-
-    // run service tasks
-    configManager.loop();
     ws2812fx.service();
+
     ArduinoOTA.handle();
 
+    RecurringTask::interval(5000, []()
+                            { measureCO2(); });
+
     // relax a bit
-    delay(10);
+    delay(1);
 }
