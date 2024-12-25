@@ -1,0 +1,4 @@
+const char *ssid = "";
+const char *password = "";
+const char *deviceName = "CO2 Sensor";
+const char *hostName = "co2-sensor";
