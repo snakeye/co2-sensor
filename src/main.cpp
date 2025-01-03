@@ -13,11 +13,15 @@
 
 #include "config.h"
 
+#define TIME_TO_MS(hours, minutes, seconds) \
+    (((hours) * 3600 + (minutes) * 60 + (seconds)) * 1000)
+
 // CO2 sensor
 const auto MH_Z19_RX = 14;
 const auto MH_Z19_TX = 16;
 // SoftwareSerial swSerial(MH_Z19_RX, MH_Z19_TX);
 MHZ co2(MH_Z19_RX, MH_Z19_TX, MHZ::MHZ19B);
+bool isCalibrated = false;
 // MHZ19 co2;
 
 // WS2812
@@ -57,8 +61,8 @@ void onOTAStart()
  */
 void onOTAEnd()
 {
-    ws2812fx.setBrightness(15);
-    ws2812fx.setColor(rgb(0, 255, 255));
+    ws2812fx.setBrightness(25);
+    ws2812fx.setColor(rgb(0, 0, 255));
     ws2812fx.setMode(FX_MODE_STATIC);
     ws2812fx.service();
 }
@@ -152,16 +156,20 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
 
     //
-    co2.setBypassCheck(true, true);
+    co2.setAutoCalibrate(false);
+    // co2.setBypassCheck(true, true);
     co2.setDebug(false);
 
     // Indicator setup
     ws2812fx.init();
-    ws2812fx.setBrightness(5);
-    ws2812fx.setColor(0x8800FF);
-    ws2812fx.setMode(FX_MODE_BREATH);
-    ws2812fx.setSpeed(SPEED_SLOW);
     ws2812fx.start();
+
+    setBrightness(5);
+    setColor(rgb(255, 255, 255));
+    setMode(FX_MODE_STATIC);
+    setSpeed(SPEED_SLOW);
+
+    ws2812fx.service();
 
     //
     WiFi.mode(WIFI_STA);
@@ -192,8 +200,8 @@ void measureCO2()
 {
     if (co2.isPreHeating())
     {
-        setBrightness(1);
-        setColor(rgb(255, 0, 0));
+        setBrightness(5);
+        setColor(rgb(0, 192, 255));
         setMode(FX_MODE_STATIC);
         // Serial.println("Preheating");
         return;
@@ -251,6 +259,18 @@ void measureCO2()
     }
 }
 
+void calibrate()
+{
+    unsigned long now = millis();
+    const unsigned long waitUntilCalibration = TIME_TO_MS(0, 30, 0);
+
+    if (!isCalibrated && now > waitUntilCalibration)
+    {
+        co2.calibrateZero();
+        isCalibrated = true;
+    }
+}
+
 /**
  * @brief
  *
@@ -263,6 +283,9 @@ void loop()
 
     RecurringTask::interval(15000, []()
                             { measureCO2(); });
+
+    // RecurringTask::interval(1000, []()
+    //                         { calibrate(); });
 
     // relax a bit
     delay(1);
