@@ -2,3 +2,6 @@ const char *ssid = "";
 const char *password = "";
 const char *deviceName = "CO2 Sensor";
 const char *hostName = "co2-sensor";
+
+const char *mqttServer = "192.168.1.4";
+uint16_t mqttPort = 1883;
