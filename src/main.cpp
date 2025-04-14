@@ -101,28 +101,101 @@ void connectWiFi()
 }
 
 // === MQTT ===
-String buildDiscoveryPayload()
+std::vector<String> buildDiscoveryPayloads()
 {
-    StaticJsonDocument<512> doc;
+    std::vector<String> payloads;
 
-    doc["name"] = "CO2";
-    doc["state_topic"] = "sensors/mhz19b/co2";
-    doc["unit_of_measurement"] = "ppm";
-    doc["device_class"] = "carbon_dioxide";
-    doc["state_class"] = "measurement";
-    doc["expire_after"] = 120;
-    doc["unique_id"] = "co2-" + String(ESP.getChipId());
+    String chipId = String(ESP.getChipId());
+    String baseTopic = "sensors/mhz19b-" + chipId;
 
-    JsonObject device = doc.createNestedObject("device");
-    device["identifiers"][0] = deviceId;
-    device["name"] = deviceName;
-    device["manufacturer"] = "DIY";
-    device["model"] = "MH-Z19B CO2 Sensor";
-    device["sw_version"] = "1.0";
+    // === CO2 Sensor ===
+    {
+        StaticJsonDocument<512> doc;
+        doc["name"] = "CO2";
+        doc["state_topic"] = baseTopic + "/co2";
+        doc["unit_of_measurement"] = "ppm";
+        doc["device_class"] = "carbon_dioxide";
+        doc["state_class"] = "measurement";
+        doc["expire_after"] = 120;
+        doc["unique_id"] = "co2-" + chipId;
 
-    String output;
-    serializeJson(doc, output);
-    return output;
+        JsonObject device = doc.createNestedObject("device");
+        device["identifiers"][0] = deviceId;
+        device["name"] = deviceName;
+        device["manufacturer"] = "DIY";
+        device["model"] = "MH-Z19B CO2 Sensor";
+        device["sw_version"] = "1.0";
+
+        String output;
+        serializeJson(doc, output);
+        payloads.push_back(output);
+    }
+
+    // === Temperature Sensor ===
+    {
+        StaticJsonDocument<512> doc;
+        doc["name"] = "Temperature";
+        doc["state_topic"] = baseTopic + "/temperature";
+        doc["unit_of_measurement"] = "°C";
+        doc["device_class"] = "temperature";
+        doc["state_class"] = "measurement";
+        doc["expire_after"] = 120;
+        doc["unique_id"] = "temp-" + chipId;
+
+        JsonObject device = doc.createNestedObject("device");
+        device["identifiers"][0] = deviceId;
+        device["name"] = deviceName;
+        device["manufacturer"] = "DIY";
+        device["model"] = "MH-Z19B CO2 Sensor";
+        device["sw_version"] = "1.0";
+
+        String output;
+        serializeJson(doc, output);
+        payloads.push_back(output);
+    }
+
+    // // === Calibration Status (binary sensor) ===
+    // {
+    //     StaticJsonDocument<512> doc;
+    //     doc["name"] = "Calibrated";
+    //     doc["state_topic"] = baseTopic + "/calibrated";
+    //     doc["device_class"] = "running"; // можно "running" или "problem"
+    //     doc["expire_after"] = 120;
+    //     doc["unique_id"] = "calibrated-" + chipId;
+    //     doc["payload_on"] = "true";
+    //     doc["payload_off"] = "false";
+
+    //     doc["device"]["identifiers"][0] = deviceId;
+    //     doc["device"]["name"] = deviceName;
+    //     doc["device"]["manufacturer"] = "DIY";
+    //     doc["device"]["model"] = "MH-Z19B CO2 Sensor";
+    //     doc["device"]["sw_version"] = "1.0";
+
+    //     String output;
+    //     serializeJson(doc, output);
+    //     payloads.push_back(output);
+    // }
+
+    return payloads;
+}
+
+void publishDiscoveryPayloads()
+{
+    auto payloads = buildDiscoveryPayloads();
+
+    String chipId = String(ESP.getChipId());
+
+    mqttClient.publish(
+        ("homeassistant/sensor/mhz19b-" + chipId + "-co2/config").c_str(),
+        payloads[0].c_str(), true);
+
+    mqttClient.publish(
+        ("homeassistant/sensor/mhz19b-" + chipId + "-temp/config").c_str(),
+        payloads[1].c_str(), true);
+
+    // mqttClient.publish(
+    //     ("homeassistant/binary_sensor/mhz19b-" + chipId + "-calibrated/config").c_str(),
+    //     payloads[2].c_str(), true);
 }
 
 void reconnectMQTT()
@@ -134,9 +207,7 @@ void reconnectMQTT()
         if (mqttClient.connect("MHZ19B_Client"))
         {
             Serial.println("connected");
-
-            String payload = buildDiscoveryPayload();
-            mqttClient.publish("homeassistant/sensor/mhz19b/config", payload.c_str(), true);
+            publishDiscoveryPayloads();
         }
         else
         {
@@ -148,12 +219,20 @@ void reconnectMQTT()
 
 void publishCO2Data(int ppm)
 {
-    mqttClient.publish("sensors/mhz19b/co2", String(ppm).c_str(), true);
+    String chipId = String(ESP.getChipId());
+    mqttClient.publish(String("sensors/mhz19b-" + chipId + "/co2").c_str(), String(ppm).c_str(), true);
 }
 
 void publishTemperatureData(float temperature)
 {
-    mqttClient.publish("sensors/mhz19b/temperature", String(temperature).c_str(), true);
+    String chipId = String(ESP.getChipId());
+    mqttClient.publish(String("sensors/mhz19b-" + chipId + "/temperature").c_str(), String(temperature).c_str(), true);
+}
+
+void publishCalibrated()
+{
+    String chipId = String(ESP.getChipId());
+    mqttClient.publish(String("sensors/mhz19b-" + chipId + "/calibrated").c_str(), isCalibrated ? "true" : "false", true);
 }
 
 // === CO2 Reading ===
@@ -219,6 +298,7 @@ void measureCO2()
     {
         updateLedEffect(ppm);
         publishCO2Data(ppm);
+        publishTemperatureData(temperature);
     }
 }
 
@@ -230,6 +310,8 @@ void calibrateSensor()
     {
         co2.calibrateZero();
         isCalibrated = true;
+
+        publishCalibrated();
     }
 }
 
@@ -270,14 +352,18 @@ void loop()
     if (!mqttClient.connected())
     {
         reconnectMQTT();
+        publishCalibrated();
     }
+
     mqttClient.loop();
     ws2812fx.service();
     ArduinoOTA.handle();
 
     RecurringTask::interval(10000, []()
                             { measureCO2(); });
-    // RecurringTask::interval(1000, []() { calibrateSensor(); });
+
+    // RecurringTask::interval(1000, []()
+    //                         { calibrateSensor(); });
 
     delay(1);
 }
